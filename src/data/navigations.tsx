@@ -1,0 +1,113 @@
+import NavItem from "@/types/NavItem";
+import { Archive, Award, Bell, BookOpen, Briefcase, Calendar, CarFront, Coins, CreditCard, Database, DollarSign, Download, FileSignature, Folder, FolderOpen, Fuel, Heart, HelpCircle, Inbox, Logs, Megaphone, Search, Star, Upload, UploadCloud, User, Zap } from "lucide-react";
+
+import {
+  LayoutDashboard,
+  Users,
+  Home,
+  FileText,
+  ClipboardCheck,
+  UserCheck,
+  Building,
+  BarChart3,
+  Settings,
+} from "lucide-react";
+
+export const workerNavigations = [
+  {
+    title: "Home",
+    url: "/worker",
+    icon: Home,
+    group: "Navigation"
+  },
+  {
+    title: "Find Jobs",
+    url: "jobs",
+    icon: Search,
+    group: "Navigation"
+  },
+  {
+    title: "My Applications",
+    url: "applications",
+    icon: FileText,
+    group: "Navigation"
+  },
+  {
+    title: "Notifications",
+    url: "notifications",
+    icon: Bell,
+    group: "Navigation"
+  },
+  {
+    title: "Profile",
+    url: "profile",
+    icon: User,
+    group: "Navigation"
+  },
+];
+
+export const employerNavigations = [
+  {
+    title: "Home",
+    url: "/employer",
+    icon: Home,
+    group: "Navigation"
+  },
+    {
+    title: "My Job Posts",
+    url: "jobs",
+    icon: Briefcase,
+    group: "Navigation"
+  },
+  {
+    title: "Applications",
+    url: "applications",
+    icon: FileText,
+    group: "Navigation"
+  },
+  {
+    title: "Notifications",
+    url: "notifications",
+    icon: Bell,
+    group: "Navigation"
+  },
+  {
+    title: "Profile",
+    url: "profile",
+    icon: User,
+    group: "Navigation"
+  },
+];
+
+export const adminNavigations = [
+  {
+    title: "Dashboard",
+    url: "/admin",
+    icon: LayoutDashboard,
+    group: "Navigation"
+  },
+  {
+    title: "Patient Directory",
+    url: "patients",
+    icon: Users,
+    group: "Navigation"
+  },
+  {
+    title: "Nutrition Scholars",
+    url: "nutrition-scholars",
+    icon: Heart,
+    group: "Navigation"
+  },
+  {
+    title: "Reports",
+    url: "reports",
+    icon: FileText,
+    group: "Navigation"
+  },
+  {
+    title: "Nutritional Guide",
+    url: "nutritional-guide",
+    icon: BookOpen,
+    group: "Navigation"
+  },
+]

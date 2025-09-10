@@ -1,0 +1,130 @@
+import React, { useEffect, useState } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/AppSidebar";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { 
+  AlertTriangle,
+  Bell,
+  Settings, 
+  User
+} from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import { Button } from "./ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { useAuth } from "@/store/auth";
+import api from "@/api/axios";
+import { format } from "date-fns";
+
+const pageNames: Record<string, string> = {
+  "/": "Dashboard Overview",
+  "/households": "Household & Purok Management", 
+  "/blotter": "Blotter & Complaints",
+  "/permits": "Permit & Document Issuance",
+  "/officials": "Officials & Staff",
+  "/businesses": "Business Registry",
+  "/reports": "Reports & Analytics",
+  
+  "/superadmin": "Dashboard Overview",
+  
+  "/superadmin/members": "Member Management",
+  "/superadmin/accounts": "Account Management",
+  "superadmin/accounts/": "Account Management",
+  "/superadmin/logs": "Activity Logs",
+
+  "/superadmin/monthly-rates": "Monthly Rates",
+};
+
+export default function Dashboard() {
+  function useCurrentPageName() {
+    const location = useLocation();
+    const pathname = location.pathname;
+
+    // Sort keys by length (longest first) so specific routes match before generic
+    const match = Object.keys(pageNames)
+      .sort((a, b) => b.length - a.length)
+      .find((route) => pathname.startsWith(route));
+
+    return match ? pageNames[match] : "Dashboard";
+  }
+  
+  // usage
+  const currentPageName = useCurrentPageName();
+
+  // const currentPageName = pageNames[location.pathname] || "Dashboard";
+
+  const { logout, user } = useAuth();
+
+  const navigate = useNavigate();
+  
+  const userName = user?.name?.split("").slice(0, 2).join("").toUpperCase();
+
+  const handleLogout = async () => {
+    try {
+      const res = await logout();
+      navigate('/');
+      console.log(res);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  return (
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full bg-background">
+        <AppSidebar />
+        <div className="flex-1 flex flex-col min-w-0">
+          {/* Top Navigation */}
+          <header className="h-16 border-b bg-card px-6 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <SidebarTrigger />
+              <div>
+                <h1 className="text-xl font-semibold text-foreground">
+                  {/* {currentPageName} */}
+                </h1>
+              </div>
+            </div>
+            <div className="flex items-center gap-4">
+              <ThemeToggle />
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="flex items-center gap-2">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src="/placeholder-avatar.jpg" />
+                      <AvatarFallback className="bg-background border border-border text-foreground">{userName}</AvatarFallback>
+                    </Avatar>
+                    <div className="hidden md:block text-left">
+                      <div className="text-sm font-medium">{user.name}</div>
+                      <div className="text-xs text-muted-foreground">{user.email}</div>
+                    </div>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  {/* <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator /> */}
+                  {/* <DropdownMenuItem onClick={() => navigate(`/${user.role}/profile`)}>
+                    <User className="mr-2 h-4 w-4" />
+                    Profile
+                  </DropdownMenuItem> */}
+                  {/* <DropdownMenuItem onClick={() => navigate(`/${user.role}/settings`)}>
+                    <Settings className="mr-2 h-4 w-4" />
+                    Settings
+                  </DropdownMenuItem> */}
+                  {/* <DropdownMenuSeparator /> */}
+                  <DropdownMenuItem onClick={handleLogout}>
+                    Log out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </header>
+
+          {/* Main Content */}
+          <main className="flex-1 p-6">
+            <Outlet />
+          </main>
+        </div>
+      </div>
+    </SidebarProvider>
+  );
+}

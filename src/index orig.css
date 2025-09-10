@@ -1,0 +1,145 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  font-family: "Poppins", sans-serif;
+}
+
+/* FICELCO Design System - Electric Cooperative Professional Theme */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+
+    /* Light mode card: adjusted for similar contrast to #171717 in dark mode */
+    --card: 0 0% 96%;
+    --card-foreground: 240 10% 3.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+
+    /* Light mode primary: rich golden yellow */
+    --primary: 46 85% 48%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+
+    --accent: 240 6% 85%;
+    --accent-foreground: 240 5.9% 10%;
+
+    /* Lighter, vibrant red */
+    --destructive: 0 84% 63%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 46 85% 48%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+
+    /* Dark mode card: #171717 */
+    --card: 0 0% 6%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+
+    /* Dark mode primary: slightly brighter golden yellow */
+    --primary: 45 90% 55%;
+    --primary-foreground: 0 0% 0%;
+
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+
+    /* Lighter red for dark mode too */
+    --destructive: 0 80% 66%;
+    --destructive-foreground: 0 0% 0%;
+
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 45 90% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  /* Hero Button Variants */
+  .btn-hero {
+    @apply bg-gradient-to-r from-primary to-accent text-white border-0 
+           hover:shadow-[var(--shadow-electric)] transition-[var(--transition-smooth)]
+           hover:scale-105 font-medium px-6 py-3;
+  }
+  
+  .btn-energy {
+    @apply bg-accent text-accent-foreground hover:bg-[hsl(var(--accent-hover))]
+           shadow-[var(--shadow-warm)] transition-[var(--transition-smooth)]
+           hover:scale-105 font-medium;
+  }
+
+  /* Card Enhancements */
+  .card-electric {
+    @apply bg-card border border-border rounded-lg shadow-[var(--shadow-card)]
+           hover:shadow-[var(--shadow-electric)] transition-[var(--transition-smooth)]
+           /* hover:-translate-y-1 */
+           ;
+  }
+
+  /* Navigation Styles */
+  .nav-link {
+    @apply text-foreground hover:text-primary transition-[var(--transition-smooth)]
+           relative after:content-[''] after:absolute after:w-0 after:h-0.5 
+           after:bottom-0 after:left-0 after:bg-primary after:transition-[var(--transition-smooth)]
+           hover:after:w-full;
+  }
+  
+  .nav-link-active {
+    @apply text-primary after:w-full;
+  }
+
+  /* Gradient Backgrounds */
+  .bg-hero-gradient {
+    background: var(--gradient-hero);
+  }
+  
+  .bg-energy-gradient {
+    background: var(--gradient-energy);
+  }
+  
+  .bg-subtle-gradient {
+    background: var(--gradient-subtle);
+  }
+
+  .bg-footer {
+    background-color: hsl(215 20% 20%);
+    color: hsl(0 0% 98%);
+  }
+}
