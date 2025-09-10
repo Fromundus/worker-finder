@@ -18,12 +18,24 @@ const GuestLayout = () => {
     }, [user, navigate]);
 
     return (
-        <div className="min-h-screen flex flex-col">
-            <Navigation />
-            <main className="flex-1">
+        // <div className="min-h-screen flex flex-col">
+        //     <Navigation />
+        //     <main className="flex-1">
+        //         <Outlet />
+        //     </main>
+        //     {/* <Footer /> */}
+        // </div>
+        <div
+            className="min-h-screen flex flex-col bg-cover bg-center bg-fixed"
+            style={{ backgroundImage: "url('/images/catanduanes-bg.jpg')" }}
+            >
+            <div className="bg-black/40 flex-1 flex flex-col"> {/* overlay for readability */}
+                <Navigation />
+                <main className="flex-1">
                 <Outlet />
-            </main>
-            {/* <Footer /> */}
+                </main>
+                {/* <Footer /> */}
+            </div>
         </div>
     );
 };

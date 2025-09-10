@@ -1,10 +1,13 @@
-import api from '@/api/axios';
-import ButtonWithLoading from '@/components/custom/ButtonWithLoading';
-import InputWithLabel from '@/components/custom/InputWithLabel';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { useAuth } from '@/store/auth';
-import React, { ChangeEvent, FormEvent } from 'react';
-import { Link } from 'react-router-dom';
+import React, { ChangeEvent, FormEvent } from "react";
+import { Link } from "react-router-dom";
+import api from "@/api/axios";
+import { useAuth } from "@/store/auth";
+
+import ButtonWithLoading from "@/components/custom/ButtonWithLoading";
+import InputWithLabel from "@/components/custom/InputWithLabel";
+
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -12,8 +15,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Label } from '@/components/ui/label';
 
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import { cn } from "@/lib/utils"; // helper from shadcn template
+import { Check } from "lucide-react";
+
+
+import { MapSelectorDialog } from "@/components/custom/MapSelectorDialog";
+import barangays from "@/data/barangays.json";
 
 type FormData = {
   name: string;
@@ -21,29 +42,37 @@ type FormData = {
   email: string;
   password: string;
   password_confirmation: string;
-  role: 'worker' | 'employer';
+  role: "worker" | "employer";
   skills?: string;
   experience?: string;
   business_name?: string;
+  address?: string;
+  lat?: string;
+  lng?: string;
 };
 
 const Register = () => {
   const { login } = useAuth();
   const [loading, setLoading] = React.useState<boolean>(false);
   const [formData, setFormData] = React.useState<FormData>({
-    name: '',
-    contact_number: '',
-    email: '',
-    password: '',
-    password_confirmation: '',
-    role: 'worker',
-    skills: '',
-    experience: '',
-    business_name: '',
+    name: "",
+    contact_number: "",
+    email: "",
+    password: "",
+    password_confirmation: "",
+    role: "worker",
+    skills: "",
+    experience: "",
+    business_name: "",
+    address: "",
+    lat: "",
+    lng: "",
   });
   const [errors, setErrors] = React.useState<string | null>(null);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -58,12 +87,11 @@ const Register = () => {
     setErrors(null);
 
     try {
-      const res = await api.post('/register', formData);
-      login(res.data.user, res.data.token); // assuming API returns { user, token }
+      const res = await api.post("/register", formData);
+      login(res.data.user, res.data.token); // backend should return { user, token }
       setLoading(false);
     } catch (err: any) {
-      setErrors(err.response?.data?.message || 'Registration failed');
-      console.error(err);
+      setErrors(err.response?.data?.message || "Registration failed");
       setLoading(false);
     }
   };
@@ -80,13 +108,35 @@ const Register = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               {errors && (
                 <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-2 w-full text-center">
                   <span className="text-destructive text-sm">{errors}</span>
                 </div>
               )}
-              <div className="space-y-6">
+
+              <div className="space-y-4">
+                <div className="flex flex-col gap-3">
+                  <Label htmlFor="role">Register As</Label>
+                  <Select
+                    value={formData.role}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        role: value as "worker" | "employer",
+                      }))
+                    }
+                  >
+                    <SelectTrigger id="role">
+                      <SelectValue placeholder="Select role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="worker">Worker</SelectItem>
+                      <SelectItem value="employer">Employer</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <InputWithLabel
                   id="name"
                   name="name"
@@ -114,7 +164,7 @@ const Register = () => {
                   name="email"
                   type="email"
                   label="Email"
-                  placeholder="Enter your Email"
+                  placeholder="Enter your email"
                   value={formData.email}
                   onChange={handleChange}
                   disabled={loading}
@@ -142,26 +192,9 @@ const Register = () => {
                   disabled={loading}
                 />
 
-                <div className="flex flex-col gap-2">
-                    <Label htmlFor="role">Register As</Label>
-                    <Select
-                        value={formData.role}
-                        onValueChange={(value) =>
-                        setFormData((prev) => ({ ...prev, role: value as "worker" | "employer" }))
-                        }
-                    >
-                        <SelectTrigger id="role">
-                        <SelectValue placeholder="Select role" />
-                        </SelectTrigger>
-                        <SelectContent>
-                        <SelectItem value="worker">Worker</SelectItem>
-                        <SelectItem value="employer">Employer</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
 
-
-                {formData.role === 'worker' && (
+                {/* Conditional Fields */}
+                {formData.role === "worker" && (
                   <>
                     <InputWithLabel
                       id="skills"
@@ -169,7 +202,7 @@ const Register = () => {
                       type="text"
                       label="Skills"
                       placeholder="e.g. Carpentry, Plumbing"
-                      value={formData.skills || ''}
+                      value={formData.skills || ""}
                       onChange={handleChange}
                       disabled={loading}
                     />
@@ -179,31 +212,114 @@ const Register = () => {
                       type="text"
                       label="Experience"
                       placeholder="e.g. 5 years in construction"
-                      value={formData.experience || ''}
+                      value={formData.experience || ""}
                       onChange={handleChange}
                       disabled={loading}
                     />
                   </>
                 )}
 
-                {formData.role === 'employer' && (
+                {formData.role === "employer" && (
                   <InputWithLabel
                     id="business_name"
                     name="business_name"
                     type="text"
                     label="Business Name"
                     placeholder="Enter your business name"
-                    value={formData.business_name || ''}
+                    value={formData.business_name || ""}
                     onChange={handleChange}
                     disabled={loading}
                   />
                 )}
+
+                <div className="flex flex-col gap-3">
+                  <Label htmlFor="address">Address (Barangay)</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <button
+                        type="button"
+                        className={cn(
+                          "w-full justify-between rounded-md border border-input bg-background px-3 py-2 text-sm",
+                          !formData.address && "text-muted-foreground"
+                        )}
+                      >
+                        {formData.address
+                          ? formData.address
+                          : "Select barangay"}
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[300px] p-0">
+                      <Command>
+                        <CommandInput placeholder="Search barangay..." />
+                        <CommandList>
+                          <CommandEmpty>No results found.</CommandEmpty>
+                          <CommandGroup className="max-h-60 overflow-y-auto">
+                            {barangays.map((b) => {
+                              const value = `${b.name}, ${b.municipality}`;
+                              return (
+                                <CommandItem
+                                  key={value}
+                                  value={value}
+                                  onSelect={() => {
+                                    setFormData((prev) => ({
+                                      ...prev,
+                                      address: value,
+                                      lat: b.lat.toString(),
+                                      lng: b.lng.toString(),
+                                    }));
+                                  }}
+                                >
+                                  <Check
+                                    className={cn(
+                                      "mr-2 h-4 w-4",
+                                      formData.address === value ? "opacity-100" : "opacity-0"
+                                    )}
+                                  />
+                                  {b.name}, {b.municipality}
+                                </CommandItem>
+                              );
+                            })}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
+
+                {/* Map Picker */}
+                <div className="flex flex-col gap-3">
+                  <Label>Exact Location</Label>
+                  <MapSelectorDialog
+                    lat={formData.lat}
+                    lng={formData.lng}
+                    onSelect={(lat, lng) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        lat,
+                        lng,
+                      }))
+                    }
+                  />
+                  {/* <div className="text-sm text-muted-foreground">
+                    {formData.lat && formData.lng
+                      ? `Selected: Lat ${formData.lat}, Lng ${formData.lng}`
+                      : "No location selected"}
+                  </div> */}
+                </div>
               </div>
 
+              {/* Submit */}
               <ButtonWithLoading
                 type="submit"
-                disabled={loading || !formData.name || !formData.email || !formData.password || !formData.password_confirmation}
-                className="w-full"
+                disabled={
+                  loading ||
+                  !formData.name ||
+                  !formData.email ||
+                  !formData.password ||
+                  !formData.password_confirmation
+                }
+                className="w-full mt-4"
                 loading={loading}
               >
                 Register
@@ -212,8 +328,8 @@ const Register = () => {
           </CardContent>
           <CardFooter className="w-full text-center flex justify-center">
             <p>
-              Already have an account?{' '}
-              <Link className="text-primary font-semibold" to="/login">
+              Already have an account?{" "}
+              <Link className="text-primary font-semibold" to="/">
                 Login
               </Link>
             </p>
