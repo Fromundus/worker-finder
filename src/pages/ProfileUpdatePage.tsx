@@ -11,6 +11,22 @@ import api from "@/api/axios";
 import { toast } from "@/hooks/use-toast";
 import AdminPage from "@/components/custom/AdminPage";
 
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import { cn } from "@/lib/utils"; // helper from shadcn template
+import { Check } from "lucide-react";
+
 const ProfileUpdatePage = () => {
   const { user, token, login } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -176,32 +192,58 @@ const ProfileUpdatePage = () => {
               />
             )}
 
-            {/* Address Select */}
             <div className="flex flex-col gap-3">
               <Label htmlFor="address">Address (Barangay)</Label>
-              <Select
-                value={formData.address}
-                onValueChange={(value) => {
-                  const barangay = barangays.find((b) => `${b.name}, ${b.municipality}` === value);
-                  setFormData((prev: any) => ({
-                    ...prev,
-                    address: value,
-                    lat: barangay?.lat.toString() || "",
-                    lng: barangay?.lng.toString() || "",
-                  }));
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select Barangay" />
-                </SelectTrigger>
-                <SelectContent>
-                  {barangays.map((b) => (
-                    <SelectItem key={`${b.name}, ${b.municipality}`} value={`${b.name}, ${b.municipality}`}>
-                      {b.name}, {b.municipality}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
+                    className={cn(
+                      "w-full justify-between rounded-md border border-input bg-background px-3 py-2 text-sm",
+                      !formData.address && "text-muted-foreground"
+                    )}
+                  >
+                    {formData.address
+                      ? formData.address
+                      : "Select barangay"}
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[300px] p-0">
+                  <Command>
+                    <CommandInput placeholder="Search barangay..." />
+                    <CommandList>
+                      <CommandEmpty>No results found.</CommandEmpty>
+                      <CommandGroup className="max-h-60 overflow-y-auto">
+                        {barangays.map((b) => {
+                          const value = `${b.name}, ${b.municipality}`;
+                          return (
+                            <CommandItem
+                              key={value}
+                              value={value}
+                              onSelect={() => {
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  address: value,
+                                  lat: b.lat.toString(),
+                                  lng: b.lng.toString(),
+                                }));
+                              }}
+                            >
+                              <Check
+                                className={cn(
+                                  "mr-2 h-4 w-4",
+                                  formData.address === value ? "opacity-100" : "opacity-0"
+                                )}
+                              />
+                              {b.name}, {b.municipality}
+                            </CommandItem>
+                          );
+                        })}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             </div>
 
             {/* Map Selector */}
