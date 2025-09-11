@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import { Briefcase, HeartPulse, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -36,8 +36,7 @@ const Navigation = () => {
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-1">
             <div className="ml-4 flex items-center gap-4">
-              <ThemeToggle />
-              <Link to={'/'}>
+              <Link to={'/login'}>
                 <Button>
                   Login
                 </Button>
@@ -47,14 +46,14 @@ const Navigation = () => {
                   Signup
                 </Button>
               </Link>
+              <ThemeToggle />
             </div>
 
           </div>
 
           {/* Mobile menu button and theme toggle */}
           <div className="lg:hidden flex items-center space-x-4">
-            <ThemeToggle />
-            <Link to={'/'}>
+            <Link to={'/login'}>
               <Button>
                 Login
               </Button>
@@ -64,6 +63,7 @@ const Navigation = () => {
                 Signup
               </Button>
             </Link>
+            <ThemeToggle />
             {/* <Button
               variant="ghost"
               size="sm"

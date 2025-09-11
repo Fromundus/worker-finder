@@ -27,6 +27,7 @@ import Notifications from "./pages/Notifications";
 import WorkerJobs from "./pages/Worker/WorkerJobs";
 import WorkerApplications from "./pages/Worker/WorkerApplications";
 import Register from "./pages/Register";
+import Feedbacks from "./pages/Feedbacks";
 
 const queryClient = new QueryClient();
 
@@ -56,9 +57,9 @@ const App = () => {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<GuestLayout />}>
-              <Route index element={<Login />} />
+              <Route index element={<Index />} />
               <Route path="/register" element={<Register />} />
-              {/* <Route path="login" element={<Login />} /> */}
+              <Route path="/login" element={<Login />} />
             </Route>
 
             <Route element={<PrivateRoute requiredRole="worker" />}>
@@ -66,6 +67,7 @@ const App = () => {
                 <Route index element={<WorkerDashboard />} />
                 <Route path="jobs" element={<WorkerJobs />} />
                 <Route path="applications" element={<WorkerApplications />} />
+                <Route path="feedbacks" element={<Feedbacks />} />
                 <Route path="notifications" element={<Notifications />} />
                 <Route path="profile" element={<ProfilePage />} />
               </Route>
@@ -76,6 +78,7 @@ const App = () => {
                 <Route index element={<EmployerDashboard />} />
                 <Route path="jobs" element={<EmployerJobs />} />
                 <Route path="applications" element={<EmployerApplications />} />
+                <Route path="feedbacks" element={<Feedbacks />} />
                 <Route path="notifications" element={<Notifications />} />
                 <Route path="profile" element={<ProfilePage />} />
               </Route>

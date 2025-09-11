@@ -33,6 +33,12 @@ export const workerNavigations = [
     group: "Navigation"
   },
   {
+    title: "Feedbacks",
+    url: "feedbacks",
+    icon: Star,
+    group: "Navigation"
+  },
+  {
     title: "Notifications",
     url: "notifications",
     icon: Bell,
@@ -63,6 +69,12 @@ export const employerNavigations = [
     title: "Applications",
     url: "applications",
     icon: FileText,
+    group: "Navigation"
+  },
+  {
+    title: "Feedbacks",
+    url: "feedbacks",
+    icon: Star,
     group: "Navigation"
   },
   {
