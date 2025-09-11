@@ -6,12 +6,14 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     loading?: boolean;
     children?: React.ReactNode;
     className?: string;
+    variant?: "link" | "default" | "destructive" | "outline" | "secondary" | "ghost";
 }
 
-const ButtonWithLoading = ({ loading, disabled, children, className, ...props }: ButtonProps) => {
+const ButtonWithLoading = ({ loading, disabled, children, className, variant, ...props }: ButtonProps) => {
   return (
     <div>
       <Button
+        variant={variant}
         className={className}
         disabled={disabled}
         {...props}

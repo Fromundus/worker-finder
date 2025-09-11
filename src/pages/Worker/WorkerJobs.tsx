@@ -35,6 +35,8 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
+import { useNavigate } from "react-router-dom";
+import ButtonWithLoading from "@/components/custom/ButtonWithLoading";
 
 const WorkerJobs = () => {
   const { user } = useAuth();
@@ -53,10 +55,13 @@ const WorkerJobs = () => {
   const [selectedJobId, setSelectedJobId] = useState<number | null>(null);
   const [message, setMessage] = useState("");
 
+  const [loading, setLoading] = React.useState(false);
+  const navigate = useNavigate();
+
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const res = await api.get("/job-posts");
+        const res = await api.get(user ? "/job-posts" : "/job-posts-public");
         setJobs(res.data.jobs);
         setAppliedJobs(new Set(res.data.appliedJobs));
       } catch (err) {
@@ -81,6 +86,8 @@ const WorkerJobs = () => {
   const handleApplyToJob = async () => {
     if (!selectedJobId) return;
 
+    setLoading(true);
+
     try {
       await api.post("/applications", {
         job_post_id: selectedJobId,
@@ -96,6 +103,7 @@ const WorkerJobs = () => {
         title: "Application Submitted!",
         description: "Your application has been sent to the employer.",
       });
+      setLoading(false);
     } catch (err) {
       console.error(err);
       toast({
@@ -103,6 +111,7 @@ const WorkerJobs = () => {
         description: "Could not apply to job. Please try again.",
         variant: "destructive",
       });
+      setLoading(false);
     }
   };
 
@@ -253,7 +262,7 @@ const WorkerJobs = () => {
                     <Button
                       variant={isApplied ? "secondary" : "default"}
                       disabled={isApplied}
-                      onClick={() => handleOpenApply(job.id)}
+                      onClick={() => user ? handleOpenApply(job.id) : navigate('/login')}
                     >
                       {isApplied ? "Applied" : "Apply Now"}
                     </Button>
@@ -295,9 +304,9 @@ const WorkerJobs = () => {
             <Button variant="outline" onClick={() => setOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleApplyToJob} disabled={!message.trim()}>
+            <ButtonWithLoading loading={loading} onClick={handleApplyToJob} disabled={!message.trim()}>
               Submit Application
-            </Button>
+            </ButtonWithLoading>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -28,6 +28,7 @@ import WorkerJobs from "./pages/Worker/WorkerJobs";
 import WorkerApplications from "./pages/Worker/WorkerApplications";
 import Register from "./pages/Register";
 import Feedbacks from "./pages/Feedbacks";
+import ProfileUpdatePage from "./pages/ProfileUpdatePage";
 
 const queryClient = new QueryClient();
 
@@ -70,6 +71,7 @@ const App = () => {
                 <Route path="feedbacks" element={<Feedbacks />} />
                 <Route path="notifications" element={<Notifications />} />
                 <Route path="profile" element={<ProfilePage />} />
+                <Route path="profile/update" element={<ProfileUpdatePage />} />
               </Route>
             </Route>
             
@@ -81,6 +83,7 @@ const App = () => {
                 <Route path="feedbacks" element={<Feedbacks />} />
                 <Route path="notifications" element={<Notifications />} />
                 <Route path="profile" element={<ProfilePage />} />
+                <Route path="profile/update" element={<ProfileUpdatePage />} />
               </Route>
             </Route>
 

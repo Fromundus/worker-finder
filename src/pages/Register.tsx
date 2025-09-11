@@ -88,7 +88,7 @@ const Register = () => {
 
     try {
       const res = await api.post("/register", formData);
-      login(res.data.user, res.data.token); // backend should return { user, token }
+      login(res.data.user, res.data.access_token); // backend should return { user, token }
       setLoading(false);
     } catch (err: any) {
       setErrors(err.response?.data?.message || "Registration failed");
