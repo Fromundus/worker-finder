@@ -174,6 +174,8 @@ const ProfilePage = () => {
   const [myFeedback, setMyFeedback] = useState<any[]>([]);
   const [completedJobs, setCompletedJobs] = useState(0);
   const [totalApplications, setTotalApplications] = useState(0);
+  const [averageRating, setAverageRating] = useState(0);
+  const [totalJobPosts, setTotalJobPosts] = useState(0);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -182,10 +184,14 @@ const ProfilePage = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
 
+        console.log(res);
+
         setProfile(res.data.user);
         setCompletedJobs(res.data.completedJobs);
         setTotalApplications(res.data.totalApplications);
         setMyFeedback(res.data.feedback);
+        setAverageRating(res.data.averageRating);
+        setTotalJobPosts(res.data.totalJobPosts);
       } catch (err) {
         console.error(err);
         toast({
@@ -306,36 +312,51 @@ const ProfilePage = () => {
               <div className="flex items-center gap-3">
                 <Star className="h-8 w-8 text-yellow-500" />
                 <div>
-                  <p className="text-2xl font-bold">{profile.average_rating || 0}/5</p>
+                  <p className="text-2xl font-bold">{averageRating || 0}/5</p>
                   <p className="text-sm text-muted-foreground">Average Rating</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="shadow-soft">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <Award className="h-8 w-8 text-success" />
-                <div>
-                  <p className="text-2xl font-bold">{completedJobs}</p>
-                  <p className="text-sm text-muted-foreground">Completed Jobs</p>
+          {user.role === "worker" && <>
+            <Card className="shadow-soft">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <Award className="h-8 w-8 text-success" />
+                  <div>
+                    <p className="text-2xl font-bold">{completedJobs}</p>
+                    <p className="text-sm text-muted-foreground">Completed Jobs</p>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
 
-          <Card className="shadow-soft">
+            <Card className="shadow-soft">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <Briefcase className="h-8 w-8 text-primary" />
+                  <div>
+                    <p className="text-2xl font-bold">{totalApplications}</p>
+                    <p className="text-sm text-muted-foreground">Total Applications</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </>}
+
+          {user.role === "employer" && <Card className="shadow-soft">
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <Briefcase className="h-8 w-8 text-primary" />
+                <Briefcase className="h-8 w-8 text-success" />
                 <div>
-                  <p className="text-2xl font-bold">{totalApplications}</p>
-                  <p className="text-sm text-muted-foreground">Total Applications</p>
+                  <p className="text-2xl font-bold">{totalJobPosts || 0}</p>
+                  <p className="text-sm text-muted-foreground">Total Job Posts</p>
                 </div>
               </div>
             </CardContent>
-          </Card>
+          </Card>}
+
         </div>
       </div>
 
@@ -382,9 +403,11 @@ const ProfilePage = () => {
               );
             })}
             {myFeedback.length > 3 && (
-              <Button variant="ghost" className="w-full">
-                View All Feedback
-              </Button>
+              <Link to={`/${user.role}/feedbacks`}>
+                <Button variant="ghost" className="w-full">
+                  View All Feedback
+                </Button>
+              </Link>
             )}
           </CardContent>
         </Card>

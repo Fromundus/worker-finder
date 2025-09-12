@@ -13,6 +13,7 @@ import {
   DollarSign,
   MapPin,
   Search,
+  Star,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -140,6 +141,8 @@ const WorkerJobs = () => {
     ...new Set(jobs.map((job) => job.location?.municipality).filter(Boolean)),
   ];
 
+  console.log(filteredJobs);
+
   return (
     <AdminPageMain
       title="Find Jobs"
@@ -225,12 +228,25 @@ const WorkerJobs = () => {
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <CardTitle className="text-lg">{job.title}</CardTitle>
-                      <CardDescription className="flex items-center gap-2 mt-1">
-                        <Building className="h-4 w-4" />
-                        {job.user?.business_name || job.user?.name}
+                      <CardDescription className="flex items-center gap-2">
+                        <span className="flex flex-col gap-2">
+                          <span className="flex items-center gap-2 mt-1">
+                            <Building className="h-4 w-4" />
+                            {job.user?.business_name || job.user?.name}
+                          </span>
+                          <span className="flex items-center gap-2 mt-1">
+                            <Star className="h-4 w-4 text-yellow-500" />
+                            {job.user?.average_rating}
+                          </span>
+                        </span>
                       </CardDescription>
                     </div>
-                    <Badge variant="outline">{job.status}</Badge>
+                    <Badge className={`text-white
+                      ${job.status === "open" && "bg-green-500 hover:bg-green-600"}  
+                      ${job.status === "paused" && "bg-orange-500 hover:bg-orange-600"}  
+                      ${job.status === "filled" && "bg-blue-500 hover:bg-blue-600"}  
+                      ${job.status === "closed" && "bg-red-500 hover:bg-red-600"}  
+                    `}>{job.status}</Badge>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">

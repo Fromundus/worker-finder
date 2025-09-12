@@ -151,6 +151,7 @@ const Feedbacks = () => {
     const fetchFeedback = async () => {
       try {
         const res = await api.get("/feedbacks");
+        console.log(res);
         setMyFeedback(res.data.feedback);
         setAverageRating(res.data.averageRating || 0);
         setRatingCounts(res.data.ratingCounts || {});
@@ -260,7 +261,7 @@ const Feedbacks = () => {
                           <User className="h-4 w-4 text-muted-foreground" />
                         )}
                         <CardTitle className="text-lg">
-                          {counterpart?.business_name || counterpart?.name}
+                          {feedback.from_user.name}
                         </CardTitle>
                       </div>
                       {job && (
