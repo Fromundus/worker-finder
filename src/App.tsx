@@ -29,6 +29,8 @@ import WorkerApplications from "./pages/Worker/WorkerApplications";
 import Register from "./pages/Register";
 import Feedbacks from "./pages/Feedbacks";
 import ProfileUpdatePage from "./pages/ProfileUpdatePage";
+import WorkerBookings from "./pages/Worker/WorkerBookings";
+import EmployerBookings from "./pages/Employer/EmployerBookings";
 
 const queryClient = new QueryClient();
 
@@ -68,6 +70,7 @@ const App = () => {
                 <Route index element={<WorkerDashboard />} />
                 <Route path="jobs" element={<WorkerJobs />} />
                 <Route path="applications" element={<WorkerApplications />} />
+                <Route path="bookings" element={<WorkerBookings />} />
                 <Route path="feedbacks" element={<Feedbacks />} />
                 <Route path="notifications" element={<Notifications />} />
                 <Route path="profile" element={<ProfilePage />} />
@@ -80,6 +83,7 @@ const App = () => {
                 <Route index element={<EmployerDashboard />} />
                 <Route path="jobs" element={<EmployerJobs />} />
                 <Route path="applications" element={<EmployerApplications />} />
+                <Route path="bookings" element={<EmployerBookings />} />
                 <Route path="feedbacks" element={<Feedbacks />} />
                 <Route path="notifications" element={<Notifications />} />
                 <Route path="profile" element={<ProfilePage />} />

@@ -465,7 +465,7 @@ const Register = () => {
                         role: e.target.value as "worker" | "employer",
                       }))
                     }
-                    className="border rounded-md px-3 py-2"
+                    className="border rounded-md px-3 py-2 bg-background"
                     disabled={loading}
                   >
                     <option value="worker">Worker</option>

@@ -111,7 +111,7 @@ const WorkerJobs = () => {
       console.error(err);
       toast({
         title: "Error",
-        description: "Could not apply to job. Please try again.",
+        description: err.response.data.message,
         variant: "destructive",
       });
       setLoading(false);

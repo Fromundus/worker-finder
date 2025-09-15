@@ -33,6 +33,12 @@ export const workerNavigations = [
     group: "Navigation"
   },
   {
+    title: "Bookings",
+    url: "bookings",
+    icon: BookOpen,
+    group: "Navigation"
+  },
+  {
     title: "Feedbacks",
     url: "feedbacks",
     icon: Star,
@@ -69,6 +75,12 @@ export const employerNavigations = [
     title: "Applications",
     url: "applications",
     icon: FileText,
+    group: "Navigation"
+  },
+  {
+    title: "My Bookings",
+    url: "bookings",
+    icon: BookOpen,
     group: "Navigation"
   },
   {

@@ -177,9 +177,7 @@ const EmployerApplications = () => {
   };
 
   return (
-    <AdminPageMain title="Applications" description="Review and manage job applications" topAction={
-      <MapFinderDialog />
-    }>
+    <AdminPageMain title="Applications" description="Review and manage job applications">
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <Card><CardContent className="p-4 flex items-center gap-3">

@@ -176,6 +176,7 @@ const ProfilePage = () => {
   const [totalApplications, setTotalApplications] = useState(0);
   const [averageRating, setAverageRating] = useState(0);
   const [totalJobPosts, setTotalJobPosts] = useState(0);
+  const [totalBookings, setTotalBookings] = useState(0);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -192,6 +193,7 @@ const ProfilePage = () => {
         setMyFeedback(res.data.feedback);
         setAverageRating(res.data.averageRating);
         setTotalJobPosts(res.data.totalJobPosts);
+        setTotalBookings(res.data.totalBookings);
       } catch (err) {
         console.error(err);
         toast({
@@ -357,6 +359,17 @@ const ProfilePage = () => {
             </CardContent>
           </Card>}
 
+          <Card className="shadow-soft">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <Briefcase className="h-8 w-8 text-primary" />
+                <div>
+                  <p className="text-2xl font-bold">{totalBookings}</p>
+                  <p className="text-sm text-muted-foreground">Total Bookings</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
 
@@ -376,6 +389,7 @@ const ProfilePage = () => {
               const counterpart =
                 profile.role === "worker" ? feedback.from_user : feedback.to_user;
                 const job = feedback.job_post;
+                const booking = feedback.booking;
 
               return (
                 <div key={feedback.id} className="border rounded-lg p-4">
@@ -395,6 +409,12 @@ const ProfilePage = () => {
                         <CardDescription className="flex items-center gap-2 mt-1">
                           <Briefcase className="h-4 w-4" />
                           {job.title}
+                        </CardDescription>
+                      )}
+                      {booking && (
+                        <CardDescription className="flex items-center gap-2 mt-1">
+                          <Briefcase className="h-4 w-4" />
+                          {booking.job_title}
                         </CardDescription>
                       )}
                     </div>
