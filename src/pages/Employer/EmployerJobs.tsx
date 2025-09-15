@@ -70,6 +70,7 @@ const EmployerJobs = () => {
   const fetchJobs = async () => {
     try {
       const res = await api.get('/job-posts-employer');
+      console.log(res);
       setJobPosts(res.data);
     } catch (err) {
       console.error(err);
@@ -521,7 +522,7 @@ const EmployerJobs = () => {
                   )}
                 </div>
 
-                {/* Show accepted users if job is filled */}
+                {/* Show active users if job is filled */}
                 {(job.status === "filled" || job.status === "closed")&& job.applications?.length > 0 && (
                   <div className="border-t pt-4">
                     <h4 className="font-medium text-sm mb-2">Workers</h4>
@@ -531,10 +532,10 @@ const EmployerJobs = () => {
                           <span>{app.user?.name}</span>
                           <div className='flex items-center gap-4'>
                             <Badge className={`
-                              ${app.status === "accepted" && "bg-green-500 hover:bg-green-600 text-white"}  
+                              ${app.status === "active" && "bg-green-500 hover:bg-green-600 text-white"}  
                               ${app.status === "completed" && "bg-primary"}  
                             `}>{app.status}</Badge>
-                            {(app.status === "accepted" && job.status !== "closed") && <Button disabled={loading} size="sm" variant="destructive" onClick={() => handleApplicationAction(app.id, "withdrawn")}>
+                            {(app.status === "active" && job.status !== "closed") && <Button disabled={loading} size="sm" variant="destructive" onClick={() => handleApplicationAction(app.id, "withdrawn")}>
                               <X className="h-4 w-4" /> Withdraw
                             </Button>}
                             {(app.status === "completed" && !app.workerIsRated && job.status === "closed") && <Button className='bg-yellow-500 hover:bg-yellow-600 hover:text-white text-white' disabled={loading} size="sm" variant="outline" onClick={() => handleAddFeedback(app)}>
@@ -549,7 +550,7 @@ const EmployerJobs = () => {
 
                 {job.status === "filled" && job.applications?.length === 0 && (
                   <div className="border-t pt-4 text-sm text-muted-foreground">
-                    No accepted workers recorded.
+                    No active workers recorded.
                   </div>
                 )}
               </CardContent>

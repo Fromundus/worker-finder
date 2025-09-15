@@ -104,6 +104,7 @@ const WorkerApplications = () => {
   // Counts
   const pendingCount = applications.filter((a) => a.status === "pending").length;
   const acceptedCount = applications.filter((a) => a.status === "accepted").length;
+  const activeCount = applications.filter((a) => a.status === "active").length;
   const rejectedCount = applications.filter((a) => a.status === "rejected").length;
   const withdrawnCount = applications.filter((a) => a.status === "withdrawn").length;
   const completedCount = applications.filter((a) => a.status === "completed").length;
@@ -131,6 +132,7 @@ const WorkerApplications = () => {
               className={`text-white
                 ${application.status === "pending" && "bg-orange-500"}
                 ${application.status === "accepted" && "bg-green-500"}
+                ${application.status === "active" && "bg-green-500"}
                 ${application.status === "rejected" && "bg-red-500"}
                 ${application.status === "withdrawn" && "bg-gray-500"}
                 ${application.status === "completed" && "bg-primary text-black"}
@@ -195,7 +197,7 @@ const WorkerApplications = () => {
       description="Track your job application status"
     >
       {/* Status Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <Card className="shadow-soft">
           <CardContent className="p-4 flex items-center justify-between">
             <div>
@@ -211,6 +213,16 @@ const WorkerApplications = () => {
             <div>
               <p className="text-sm text-muted-foreground">Accepted</p>
               <p className="text-2xl font-bold text-green-500">{acceptedCount}</p>
+            </div>
+            <CheckCircle className="h-8 w-8 text-green-500" />
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-soft">
+          <CardContent className="p-4 flex items-center justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground">Active</p>
+              <p className="text-2xl font-bold text-green-500">{activeCount}</p>
             </div>
             <CheckCircle className="h-8 w-8 text-green-500" />
           </CardContent>
@@ -255,12 +267,13 @@ const WorkerApplications = () => {
           <TabsTrigger value="all">All ({applications.length})</TabsTrigger>
           <TabsTrigger value="pending">Pending ({pendingCount})</TabsTrigger>
           <TabsTrigger value="accepted">Accepted ({acceptedCount})</TabsTrigger>
+          <TabsTrigger value="active">Active ({activeCount})</TabsTrigger>
           <TabsTrigger value="rejected">Rejected ({rejectedCount})</TabsTrigger>
           <TabsTrigger value="withdrawn">Withdrawn ({withdrawnCount})</TabsTrigger>
           <TabsTrigger value="completed">Completed ({completedCount})</TabsTrigger>
         </TabsList>
 
-        {["all", "pending", "accepted", "rejected", "withdrawn", "completed"].map((tab) => (
+        {["all", "pending", "accepted", "active", "rejected", "withdrawn", "completed"].map((tab) => (
           <TabsContent key={tab} value={tab} className="space-y-4">
             <div className="grid grid-cols-1 gap-4">
               {(tab === "all"

@@ -77,6 +77,7 @@ const EmployerApplications = () => {
 
   const pendingApplications = jobFilteredApplications.filter(app => app.status === "pending");
   const acceptedApplications = jobFilteredApplications.filter(app => app.status === "accepted");
+  const activeApplications = jobFilteredApplications.filter(app => app.status === "active");
   const rejectedApplications = jobFilteredApplications.filter(app => app.status === "rejected");
   const withdrawnApplications = jobFilteredApplications.filter(app => app.status === "withdrawn");
   const completedApplications = jobFilteredApplications.filter(app => app.status === "completed");
@@ -96,6 +97,7 @@ const EmployerApplications = () => {
             <Badge className={`text-white
               ${application.status === "pending" && "bg-orange-500 hover:bg-orange-600"}
               ${application.status === "accepted" && "bg-green-500 hover:bg-green-600"}
+              ${application.status === "active" && "bg-green-500 hover:bg-green-600"}
               ${application.status === "rejected" && "bg-red-500 hover:bg-red-600"}
               ${application.status === "withdrawn" && "bg-gray-500 hover:bg-gray-600"}
               ${application.status === "completed" && "bg-primary text-black"}
@@ -179,7 +181,7 @@ const EmployerApplications = () => {
       <MapFinderDialog />
     }>
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <Card><CardContent className="p-4 flex items-center gap-3">
           <Clock className="h-8 w-8 text-orange-500" />
           <div><p className="text-2xl font-bold">{pendingApplications.length}</p>
@@ -189,6 +191,11 @@ const EmployerApplications = () => {
           <CheckCircle className="h-8 w-8 text-green-500" />
           <div><p className="text-2xl font-bold">{acceptedApplications.length}</p>
             <p className="text-sm text-muted-foreground">Accepted</p></div>
+        </CardContent></Card>
+        <Card><CardContent className="p-4 flex items-center gap-3">
+          <CheckCircle className="h-8 w-8 text-green-500" />
+          <div><p className="text-2xl font-bold">{acceptedApplications.length}</p>
+            <p className="text-sm text-muted-foreground">Active</p></div>
         </CardContent></Card>
         <Card><CardContent className="p-4 flex items-center gap-3">
           <XCircle className="h-8 w-8 text-gray-500" />
@@ -228,13 +235,14 @@ const EmployerApplications = () => {
         <TabsList>
           <TabsTrigger value="pending">Pending ({pendingApplications.length})</TabsTrigger>
           <TabsTrigger value="accepted">Accepted ({acceptedApplications.length})</TabsTrigger>
+          <TabsTrigger value="active">Active ({activeApplications.length})</TabsTrigger>
           <TabsTrigger value="rejected">Rejected ({rejectedApplications.length})</TabsTrigger>
           <TabsTrigger value="withdrawn">Withdrawn ({withdrawnApplications.length})</TabsTrigger>
           <TabsTrigger value="completed">Completed ({completedApplications.length})</TabsTrigger>
           <TabsTrigger value="all">All ({jobFilteredApplications.length})</TabsTrigger>
         </TabsList>
 
-        {["pending", "accepted", "rejected", "withdrawn", "completed", "all"].map(tab => (
+        {["pending", "accepted", "active", "rejected", "withdrawn", "completed", "all"].map(tab => (
           <TabsContent key={tab} value={tab} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {(tab === "all" ? jobFilteredApplications : jobFilteredApplications.filter(a => a.status === tab)).map(app => (

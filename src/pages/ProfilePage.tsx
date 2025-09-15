@@ -160,7 +160,7 @@
 import AdminPageMain from "@/components/custom/AdminPageMain";
 import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Award, Briefcase, Clock, Mail, PenBox, Phone, Star, User } from "lucide-react";
+import { Award, Briefcase, Building, Clock, Mail, PenBox, Phone, Star, User } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/store/auth";
@@ -375,13 +375,29 @@ const ProfilePage = () => {
             {myFeedback.slice(0, 3).map((feedback) => {
               const counterpart =
                 profile.role === "worker" ? feedback.from_user : feedback.to_user;
+                const job = feedback.job_post;
 
               return (
                 <div key={feedback.id} className="border rounded-lg p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <p className="font-medium">
-                      {counterpart?.business_name || counterpart?.name}
-                    </p>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        {user.role === "worker" ? (
+                          <Building className="h-4 w-4 text-muted-foreground" />
+                        ) : (
+                          <User className="h-4 w-4 text-muted-foreground" />
+                        )}
+                        <CardTitle className="text-lg">
+                          {feedback.from_user.name}
+                        </CardTitle>
+                      </div>
+                      {job && (
+                        <CardDescription className="flex items-center gap-2 mt-1">
+                          <Briefcase className="h-4 w-4" />
+                          {job.title}
+                        </CardDescription>
+                      )}
+                    </div>
                     <div className="flex items-center gap-1">
                       {[1, 2, 3, 4, 5].map((i) => (
                         <Star
