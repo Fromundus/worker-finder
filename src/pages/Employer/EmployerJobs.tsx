@@ -37,6 +37,7 @@ import {
   TabsTrigger,
   TabsContent
 } from "@/components/ui/tabs";
+import { MapSelectorDialog } from '@/components/custom/MapSelectorDialog';
 
 const EmployerJobs = () => {
   const { user } = useAuth();
@@ -51,6 +52,8 @@ const EmployerJobs = () => {
     job_type: '',
     salary: '',
     location_id: '',
+    lat: '',
+    lng: '',
   });
   const [activeTab, setActiveTab] = useState("all");
 
@@ -92,7 +95,7 @@ const EmployerJobs = () => {
         description: "Job post created successfully.",
       });
       setIsCreateDialogOpen(false);
-      setNewJob({ title: '', description: '', job_type: '', salary: '', location_id: '' });
+      setNewJob({ title: '', description: '', job_type: '', salary: '', location_id: '', lat: '', lng: '' });
       fetchJobs();
     } catch (err: any) {
       console.error(err);
@@ -209,6 +212,7 @@ const EmployerJobs = () => {
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
+              {/* Title */}
               <div className='space-y-2'>
                 <Label htmlFor="title">Job Title</Label>
                 <Input
@@ -218,6 +222,8 @@ const EmployerJobs = () => {
                   placeholder="e.g. Construction Worker"
                 />
               </div>
+
+              {/* Description */}
               <div className='space-y-2'>
                 <Label htmlFor="description">Description</Label>
                 <Textarea
@@ -228,6 +234,8 @@ const EmployerJobs = () => {
                   rows={3}
                 />
               </div>
+
+              {/* Job type + salary */}
               <div className="grid grid-cols-2 gap-2">
                 <div className='space-y-2'>
                   <Label htmlFor="job_type">Type</Label>
@@ -255,7 +263,7 @@ const EmployerJobs = () => {
                 </div>
               </div>
 
-              {/* Location selector */}
+              {/* Barangay selection */}
               <div className="flex flex-col gap-3">
                 <Label htmlFor="address">Address (Barangay)</Label>
                 <Popover>
@@ -268,7 +276,7 @@ const EmployerJobs = () => {
                       )}
                     >
                       {newJob.location_id
-                        ? newJob.location_id
+                        ? `${barangays.find(b => b.id === Number(newJob.location_id))?.name}, ${barangays.find(b => b.id === Number(newJob.location_id))?.municipality}`
                         : "Select barangay"}
                     </button>
                   </PopoverTrigger>
@@ -278,29 +286,28 @@ const EmployerJobs = () => {
                       <CommandList>
                         <CommandEmpty>No results found.</CommandEmpty>
                         <CommandGroup className="max-h-60 overflow-y-auto">
-                          {barangays.map((b) => {
-                            const value = `${b.name}, ${b.municipality}`;
-                            return (
-                              <CommandItem
-                                key={value}
-                                value={value}
-                                onSelect={() => {
-                                  setNewJob((prev) => ({
-                                    ...prev,
-                                    location_id: value,
-                                  }));
-                                }}
-                              >
-                                <Check
-                                  className={cn(
-                                    "mr-2 h-4 w-4",
-                                    newJob.location_id === value ? "opacity-100" : "opacity-0"
-                                  )}
-                                />
-                                {b.name}, {b.municipality}
-                              </CommandItem>
-                            );
-                          })}
+                          {barangays.map((b) => (
+                            <CommandItem
+                              key={b.id}
+                              value={`${b.name}, ${b.municipality}`}
+                              onSelect={() => {
+                                setNewJob((prev) => ({
+                                  ...prev,
+                                  location_id: b.id.toString(),
+                                  lat: b.lat.toString(),
+                                  lng: b.lng.toString(),
+                                }));
+                              }}
+                            >
+                              <Check
+                                className={cn(
+                                  "mr-2 h-4 w-4",
+                                  newJob.location_id === b.id.toString() ? "opacity-100" : "opacity-0"
+                                )}
+                              />
+                              {b.name}, {b.municipality}
+                            </CommandItem>
+                          ))}
                         </CommandGroup>
                       </CommandList>
                     </Command>
@@ -308,11 +315,36 @@ const EmployerJobs = () => {
                 </Popover>
               </div>
 
+              {/* Map Selector */}
+              <div className="flex flex-col gap-3">
+                <Label>Exact Location</Label>
+                <MapSelectorDialog
+                  lat={newJob.lat}
+                  lng={newJob.lng}
+                  onSelect={(lat, lng) =>
+                    setNewJob((prev) => ({ ...prev, lat, lng }))
+                  }
+                />
+                <div className="text-sm text-muted-foreground">
+                  {newJob.lat && newJob.lng
+                    ? `Selected: Lat ${newJob.lat}, Lng ${newJob.lng}`
+                    : "No location selected"}
+                </div>
+              </div>
+
+              {/* Actions */}
               <div className="flex items-center gap-2 pt-4 w-full">
                 <ButtonWithLoading
                   loading={loading}
                   disabled={
-                    loading || !newJob.title || !newJob.description || !newJob.job_type || !newJob.salary || !newJob.location_id
+                    loading ||
+                    !newJob.title ||
+                    !newJob.description ||
+                    !newJob.job_type ||
+                    !newJob.salary ||
+                    !newJob.location_id ||
+                    !newJob.lat ||
+                    !newJob.lng
                   }
                   onClick={handleCreateJob}
                 >

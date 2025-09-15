@@ -1,5 +1,4 @@
 type User = {
-  address: string;
   average_rating: string;
   business_name: null | string;
   contact_number: string;
@@ -10,6 +9,7 @@ type User = {
   id: number
   lat: string;
   lng: string;
+  location_id: number;
   name: string;
   role: string;
   skills: string;

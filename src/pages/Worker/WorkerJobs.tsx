@@ -11,6 +11,7 @@ import {
   Building,
   Clock,
   DollarSign,
+  Map,
   MapPin,
   Search,
   Star,
@@ -36,8 +37,9 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import ButtonWithLoading from "@/components/custom/ButtonWithLoading";
+import MapFinder from "@/components/MapFinder";
 
 const WorkerJobs = () => {
   const { user } = useAuth();
@@ -147,6 +149,9 @@ const WorkerJobs = () => {
     <AdminPageMain
       title="Find Jobs"
       description="Discover opportunities in Catanduanes"
+      topAction={
+        <MapFinder />
+      }
     >
       {/* Search + Filters */}
       <Card className="shadow-soft">

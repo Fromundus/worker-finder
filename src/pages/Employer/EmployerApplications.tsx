@@ -16,6 +16,7 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue
 } from "@/components/ui/select";
+import MapFinderDialog from '@/components/MapFinder';
 
 const EmployerApplications = () => {
   const [applications, setApplications] = useState<any[]>([]);
@@ -174,7 +175,9 @@ const EmployerApplications = () => {
   };
 
   return (
-    <AdminPageMain title="Applications" description="Review and manage job applications">
+    <AdminPageMain title="Applications" description="Review and manage job applications" topAction={
+      <MapFinderDialog />
+    }>
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
         <Card><CardContent className="p-4 flex items-center gap-3">
