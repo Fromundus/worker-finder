@@ -1,5 +1,5 @@
 import NavItem from "@/types/NavItem";
-import { Archive, Award, Bell, BookOpen, Briefcase, Calendar, CarFront, Coins, CreditCard, Database, DollarSign, Download, FileSignature, Folder, FolderOpen, Fuel, Heart, HelpCircle, Inbox, Logs, Megaphone, Search, Star, Upload, UploadCloud, User, Zap } from "lucide-react";
+import { Archive, Award, Bell, BookOpen, Briefcase, Calendar, CarFront, Coins, CreditCard, Database, DollarSign, Download, FileSignature, Folder, FolderOpen, Fuel, Heart, HelpCircle, Inbox, Logs, Megaphone, MessageCircle, Search, Star, Upload, UploadCloud, User, Zap } from "lucide-react";
 
 import {
   LayoutDashboard,
@@ -42,6 +42,12 @@ export const workerNavigations = [
     title: "Feedbacks",
     url: "feedbacks",
     icon: Star,
+    group: "Navigation"
+  },
+  {
+    title: "Messages",
+    url: "messages",
+    icon: MessageCircle,
     group: "Navigation"
   },
   {
@@ -90,6 +96,12 @@ export const employerNavigations = [
     group: "Navigation"
   },
   {
+    title: "Messages",
+    url: "messages",
+    icon: MessageCircle,
+    group: "Navigation"
+  },
+  {
     title: "Notifications",
     url: "notifications",
     icon: Bell,
@@ -111,27 +123,15 @@ export const adminNavigations = [
     group: "Navigation"
   },
   {
-    title: "Patient Directory",
-    url: "patients",
+    title: "Accounts",
+    url: "accounts",
     icon: Users,
-    group: "Navigation"
-  },
-  {
-    title: "Nutrition Scholars",
-    url: "nutrition-scholars",
-    icon: Heart,
     group: "Navigation"
   },
   {
     title: "Reports",
     url: "reports",
     icon: FileText,
-    group: "Navigation"
-  },
-  {
-    title: "Nutritional Guide",
-    url: "nutritional-guide",
-    icon: BookOpen,
     group: "Navigation"
   },
 ]

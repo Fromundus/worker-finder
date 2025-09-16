@@ -510,6 +510,7 @@ import api from "@/api/axios";
 import { useAuth } from "@/store/auth";
 import { toast } from "@/hooks/use-toast";
 import { Badge } from "./ui/badge";
+import { Link } from "react-router-dom";
 
 function isValidNumber(v: any) {
   return v !== null && v !== undefined && Number.isFinite(Number(v));
@@ -956,7 +957,17 @@ const MapFinderDialog: React.FC = () => {
                                 </div>
                               </div>
 
-                              <div className="pt-4 w-full flex justify-end">
+                              <div className="pt-4 w-full flex flex-wrap justify-end gap-2">
+                                <Link to={`/${user.role}/jobs/${loc.id}`}>
+                                    <Button variant="outline" className="bg-white border border-gray-300 hover:bg-white hover:text-blue-500">
+                                      View Job
+                                    </Button>
+                                </Link>
+                                <Link to={`/${user.role}/profile/${loc.user.id}`}>
+                                    <Button variant="outline" className="bg-white border border-gray-300 hover:bg-white hover:text-blue-500">
+                                      View Profile
+                                    </Button>
+                                </Link>
                                 <Button
                                   className="bg-blue-500 text-white hover:bg-blue-700"
                                   onClick={() => safeApply(loc.id)}
@@ -1007,7 +1018,12 @@ const MapFinderDialog: React.FC = () => {
                                 </div>
                               </div>
 
-                              <div className="pt-4 w-full flex justify-end">
+                              <div className="pt-4 w-full flex flex-wrap justify-end gap-2">
+                                <Link to={`/${user.role}/profile/${loc.id}`}>
+                                    <Button variant="outline" className="bg-white border border-gray-300 hover:bg-white hover:text-blue-500">
+                                      View Profile
+                                    </Button>
+                                </Link>
                                 <Button
                                   className="bg-blue-500 text-white hover:bg-blue-700"
                                   onClick={() => openBookingDialog(loc.id)}

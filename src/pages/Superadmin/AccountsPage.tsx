@@ -5,8 +5,6 @@ import React from 'react'
 const AccountsPage = () => {
     return (
         <AccountsTable />
-        // <AdminPageMain title='Accounts' description='Manage and monitor user accounts.'>
-        // </AdminPageMain>
     )
 }
 

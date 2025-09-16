@@ -31,6 +31,9 @@ import Feedbacks from "./pages/Feedbacks";
 import ProfileUpdatePage from "./pages/ProfileUpdatePage";
 import WorkerBookings from "./pages/Worker/WorkerBookings";
 import EmployerBookings from "./pages/Employer/EmployerBookings";
+import MessagesPage from "./pages/MessagesPage";
+import AdminDashboard from "./pages/Admin/AdminDashboard";
+import WorkerJobDetails from "./pages/Worker/WorkerJobDetails";
 
 const queryClient = new QueryClient();
 
@@ -69,12 +72,15 @@ const App = () => {
               <Route path="/worker" element={<AuthLayout />}>
                 <Route index element={<WorkerDashboard />} />
                 <Route path="jobs" element={<WorkerJobs />} />
+                <Route path="jobs/:id" element={<WorkerJobDetails />} />
                 <Route path="applications" element={<WorkerApplications />} />
                 <Route path="bookings" element={<WorkerBookings />} />
                 <Route path="feedbacks" element={<Feedbacks />} />
+                <Route path="messages" element={<MessagesPage />} />
                 <Route path="notifications" element={<Notifications />} />
                 <Route path="profile" element={<ProfilePage />} />
                 <Route path="profile/update" element={<ProfileUpdatePage />} />
+                <Route path="profile/:id" element={<ProfilePage />} />
               </Route>
             </Route>
             
@@ -85,16 +91,19 @@ const App = () => {
                 <Route path="applications" element={<EmployerApplications />} />
                 <Route path="bookings" element={<EmployerBookings />} />
                 <Route path="feedbacks" element={<Feedbacks />} />
+                <Route path="messages" element={<MessagesPage />} />
                 <Route path="notifications" element={<Notifications />} />
                 <Route path="profile" element={<ProfilePage />} />
                 <Route path="profile/update" element={<ProfileUpdatePage />} />
+                <Route path="profile/:id" element={<ProfilePage />} />
               </Route>
             </Route>
 
             <Route element={<PrivateRoute requiredRole="admin" />}>
               <Route path="/admin" element={<AdminLayout />}>
-                <Route index element={<DashboardOverview />} />
-                <Route path="profile" element={<ProfilePage />} />
+                <Route index element={<AdminDashboard />} />
+                <Route path="accounts" element={<AccountsPage />} />
+                <Route path="accounts/:id" element={<ProfilePage />} />
               </Route>
             </Route>
 

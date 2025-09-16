@@ -280,13 +280,20 @@ const WorkerJobs = () => {
                     <p className="text-xs text-muted-foreground">
                       Posted {new Date(job.created_at).toLocaleDateString()}
                     </p>
-                    <Button
-                      variant={isApplied ? "secondary" : "default"}
-                      disabled={isApplied}
-                      onClick={() => user ? handleOpenApply(job.id) : navigate('/login')}
-                    >
-                      {isApplied ? "Applied" : "Apply Now"}
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <Link to={`${job.id}`}>
+                        <Button variant="outline" >
+                          View Job
+                        </Button>
+                      </Link>
+                      <Button
+                        variant={isApplied ? "secondary" : "default"}
+                        disabled={isApplied}
+                        onClick={() => user ? handleOpenApply(job.id) : navigate('/login')}
+                      >
+                        {isApplied ? "Applied" : "Apply Now"}
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>

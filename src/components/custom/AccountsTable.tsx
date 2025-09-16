@@ -27,6 +27,7 @@ import IconButton from "./IconButton";
 import Modal from "./Modal";
 import api from "@/api/axios";
 import AddUser from "./add-modals/AddUser";
+import StatusBadge from "./StatusBadge";
 
 export default function AccountsTable() {
   const [users, setUsers] = useState<User[]>([]);
@@ -37,6 +38,9 @@ export default function AccountsTable() {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState(search); // new
   const [loading, setLoading] = useState(false);
+
+  const [selectedRole, setSelectedRole] = useState("all");
+  const [selectedStatus, setSelectedStatus] = useState("all");
 
   const [deleteModal, setDeleteModal] = useState(false);
 
@@ -60,6 +64,8 @@ export default function AccountsTable() {
           page, 
           per_page: perPage, 
           search: searchQuery,
+          role: selectedRole,
+          status: selectedStatus,
         },
       });
       console.log(res);
@@ -76,7 +82,7 @@ export default function AccountsTable() {
   // Fetch when page or search changes
   useEffect(() => {
     fetchUsers();
-  }, [page, debouncedSearch]);
+  }, [page, debouncedSearch, selectedRole, selectedStatus]);
 
   // Debounce search
   useEffect(() => {
@@ -128,6 +134,36 @@ export default function AccountsTable() {
     }
   };
 
+  const updateStatus = async (ids: number[], status: string) => {
+    if (!ids.length) return;
+    setLoading(true);
+
+    const data = {
+      ids: ids,
+      status: status,
+    }
+
+    try {
+      await api.put("/update-status", data);
+
+      toast({
+        title: "Updated Successfully",
+      });
+      
+      setSelected([]);
+      fetchUsers();
+    } catch (err) {
+      console.log(err);
+      toast({
+        title: err.response.status,
+        description: err.response.data.message,
+        variant: "destructive",
+      });
+      setLoading(false);
+    }
+  };
+
+
   const navigate = useNavigate();
 
   return (
@@ -135,19 +171,8 @@ export default function AccountsTable() {
       {/* Search + Bulk Actions */}
       <div className="flex gap-6 flex-col lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Nutrition Scholar Management</h2>
-          <p className="text-muted-foreground">Manage nutrition scholar information and records</p>
-        </div>
-        <div className="space-x-4">
-          {/* <Button>
-            <Link className="flex items-center gap-2" to={'add'}>
-              <Plus /> Add Account
-            </Link>
-          </Button> */}
-
-          <AddUser refetch={fetchUsers} />
-
-          {/* <AddAdmin refetch={fetchUsers} /> */}
+          <h2 className="text-2xl font-bold">Account Management</h2>
+          <p className="text-muted-foreground">Manage Account information and records.</p>
         </div>
       </div>
 
@@ -163,6 +188,29 @@ export default function AccountsTable() {
                 className="w-full pl-10"
               />
             </div>
+
+            <Select value={selectedRole} onValueChange={setSelectedRole} disabled={loading}>
+              <SelectTrigger className="w-[150px]">
+                <SelectValue placeholder="Filter by Role" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="admin">Admin</SelectItem>
+                <SelectItem value="worker">Worker</SelectItem>
+                <SelectItem value="employer">Employer</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={selectedStatus} onValueChange={setSelectedStatus} disabled={loading}>
+              <SelectTrigger className="w-[150px]">
+                <SelectValue placeholder="Filter by Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="pending">Pending</SelectItem>
+                <SelectItem value="active">Verified</SelectItem>
+                <SelectItem value="inactive">Inactive</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </CardContent>
       </Card>
@@ -171,7 +219,7 @@ export default function AccountsTable() {
         <CardHeader>
           <div className="w-full flex flex-col gap-6 lg:flex-row lg:justify-between lg:items-center">
             <CardTitle>
-              Nutrition Scholar Records
+              Account Records
             </CardTitle>
               <div className="flex items-center gap-2">
                   <>
@@ -206,10 +254,11 @@ export default function AccountsTable() {
                   />
                 </TableHead>
                 <TableHead>Name</TableHead>
-                <TableHead>Email</TableHead>
                 <TableHead>Contact Number</TableHead>
-                <TableHead>Area of Assignment</TableHead>
-                <TableHead>Notes</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Role</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -229,16 +278,40 @@ export default function AccountsTable() {
                       />
                     </TableCell>
                     <TableCell>{u.name}</TableCell>
-                    <TableCell>{u.email}</TableCell>
                     <TableCell>{u.contact_number}</TableCell>
-                    <TableCell>{u.area}</TableCell>
-                    <TableCell>{u.notes}</TableCell>
+                    <TableCell>{u.email}</TableCell>
+                    <TableCell>{u.role}</TableCell>
+                    <TableCell>
+                      <StatusBadge status={u.status} />
+                    </TableCell>
+                    <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="hover:bg-secondary hover:text-foreground">
+                            <MoreVertical />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                            onClick={() => navigate(`${u.id}`)}
+                          >View</DropdownMenuItem>
+
+                          {(u.status === "pending" || u.status === "inactive") && <DropdownMenuItem onClick={() => updateStatus([u.id], "active")}>
+                            Verify/Activate
+                          </DropdownMenuItem>}
+
+                          {u.status === "active" && <DropdownMenuItem onClick={() => updateStatus([u.id], "inactive")}>
+                            Deactivate
+                          </DropdownMenuItem>}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
                   <TableCell colSpan={7} className="text-center">
-                    No nutrition scholars found.
+                    No users found.
                   </TableCell>
                 </TableRow>
               )}
