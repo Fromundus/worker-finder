@@ -195,7 +195,7 @@ export default function AccountsTable() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All</SelectItem>
-                <SelectItem value="admin">Admin</SelectItem>
+                {/* <SelectItem value="admin">Admin</SelectItem> */}
                 <SelectItem value="worker">Worker</SelectItem>
                 <SelectItem value="employer">Employer</SelectItem>
               </SelectContent>

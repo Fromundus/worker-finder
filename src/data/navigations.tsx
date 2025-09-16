@@ -134,4 +134,10 @@ export const adminNavigations = [
     icon: FileText,
     group: "Navigation"
   },
+  {
+    title: "Profile",
+    url: "profile",
+    icon: User,
+    group: "Navigation"
+  },
 ]

@@ -34,6 +34,8 @@ import EmployerBookings from "./pages/Employer/EmployerBookings";
 import MessagesPage from "./pages/MessagesPage";
 import AdminDashboard from "./pages/Admin/AdminDashboard";
 import WorkerJobDetails from "./pages/Worker/WorkerJobDetails";
+import AdminProfilePage from "./pages/Admin/AdminProfilePage";
+import AdminProfileUpdatePage from "./pages/Admin/AdminProfileUpdatePage";
 
 const queryClient = new QueryClient();
 
@@ -104,6 +106,8 @@ const App = () => {
                 <Route index element={<AdminDashboard />} />
                 <Route path="accounts" element={<AccountsPage />} />
                 <Route path="accounts/:id" element={<ProfilePage />} />
+                <Route path="profile" element={<AdminProfilePage />} />
+                <Route path="profile/update" element={<AdminProfileUpdatePage />} />
               </Route>
             </Route>
 

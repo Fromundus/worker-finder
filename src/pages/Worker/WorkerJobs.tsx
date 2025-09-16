@@ -150,7 +150,9 @@ const WorkerJobs = () => {
       title="Find Jobs"
       description="Discover opportunities in Catanduanes"
       topAction={
-        <MapFinder />
+        <>
+          {user && <MapFinder />}
+        </>
       }
     >
       {/* Search + Filters */}
@@ -190,7 +192,7 @@ const WorkerJobs = () => {
               <SelectContent>
                 <SelectItem value="all">All Types</SelectItem>
                 <SelectItem value="one-time">One-time</SelectItem>
-                <SelectItem value="daily">Daily</SelectItem>
+                <SelectItem value="full-time">Full-time</SelectItem>
                 <SelectItem value="part-time">Part-time</SelectItem>
               </SelectContent>
             </Select>
@@ -281,11 +283,12 @@ const WorkerJobs = () => {
                       Posted {new Date(job.created_at).toLocaleDateString()}
                     </p>
                     <div className="flex items-center gap-2">
-                      <Link to={`${job.id}`}>
-                        <Button variant="outline" >
-                          View Job
-                        </Button>
-                      </Link>
+                      <Button 
+                        variant="outline"
+                        onClick={() => user ? navigate(`${job.id}`) : navigate('/login')}
+                      >
+                        View Job
+                      </Button>
                       <Button
                         variant={isApplied ? "secondary" : "default"}
                         disabled={isApplied}
