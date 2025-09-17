@@ -15,6 +15,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useAuth } from "@/store/auth";
 import api from "@/api/axios";
 import { format } from "date-fns";
+import { Conversation } from "@/types/Conversation";
+import { toast } from "@/hooks/use-toast";
+import echo from "@/lib/echo";
 
 const pageNames: Record<string, string> = {
   "/": "Dashboard Overview",
@@ -69,6 +72,38 @@ export default function Dashboard() {
     }
   }
 
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+
+  const fetchConversations = () => {
+    api.get("/conversations").then((res) => setConversations(res.data));
+  }
+
+  useEffect(() => {
+    if (!user) return;
+
+    console.log(`users.${user.id}`);
+
+    fetchConversations();
+
+    const channel = echo.private(`users.${user.id}`);
+
+    channel.listen(".MessageSent", (message: any) => {
+      console.log("📩 New message for you!", message);
+
+      fetchConversations();
+
+      toast({
+        title: "You received a new message",
+      })
+    });
+
+    return () => {
+      echo.leave(`users.${user.id}`);
+    };
+  }, [user?.id]);
+  
+  console.log(conversations);
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
@@ -121,7 +156,10 @@ export default function Dashboard() {
 
           {/* Main Content */}
           <main className="flex-1 p-6">
-            <Outlet />
+            <Outlet context={{
+              conversations,
+              fetchConversations,
+            }} />
           </main>
         </div>
       </div>

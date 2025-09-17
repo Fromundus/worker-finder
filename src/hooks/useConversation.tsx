@@ -11,6 +11,7 @@ export type Message = {
 };
 
 export function useConversation(conversationId: number) {
+  const [loading, setLoading] = useState<boolean>(false); 
   const [messages, setMessages] = useState<Message[]>([]);
   const [conversation, setConversation] = useState(null);
 
@@ -18,12 +19,19 @@ export function useConversation(conversationId: number) {
     if (!conversationId) return;
 
     // Fetch initial messages
-    const fetchMessages = () => {
-      api.get(`/conversations/${conversationId}/messages`).then((res) => {
+    const fetchMessages = (load = true) => {
+      setLoading(load);
+      api.get(`/conversations/${conversationId}/messages`)
+        .then((res) => {
         setMessages(res.data.data);
         // console.log(res)
         setConversation(res.data.conversation);
-      });
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
+      })
     }
 
     fetchMessages();
@@ -35,7 +43,7 @@ export function useConversation(conversationId: number) {
 
     channel.listen('.MessageSent', (e: any) => {
       console.log("Received new message:", e.message);
-      fetchMessages();
+      fetchMessages(false);
       // setMessages(prev => [...prev, e.message]);
     });
     
@@ -49,5 +57,5 @@ export function useConversation(conversationId: number) {
     // setMessages((prev) => [...prev, res.data]);
   };
 
-  return { messages, sendMessage, conversation };
+  return { messages, sendMessage, conversation, loading };
 }

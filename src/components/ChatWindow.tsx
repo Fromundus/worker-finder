@@ -6,6 +6,7 @@ import { ArrowLeft, SendHorizonal } from "lucide-react";
 import AdminPage from "./custom/AdminPage";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useNavigate } from "react-router-dom";
+import QueryLoadingPage from "@/pages/StatusPages/QueryLoadingPage";
 
 export default function ChatWindow({
   conversationId,
@@ -14,7 +15,7 @@ export default function ChatWindow({
   conversationId: number;
   currentUserId: number;
 }) {
-  const { messages, sendMessage, conversation } = useConversation(conversationId);
+  const { messages, sendMessage, conversation, loading } = useConversation(conversationId);
   const [text, setText] = useState("");
   const endRef = useRef<HTMLDivElement | null>(null);
 
@@ -33,6 +34,22 @@ export default function ChatWindow({
 
   const navigate = useNavigate();
 
+  if(loading){
+    return (
+      <QueryLoadingPage />
+    )
+  }
+
+  if(!loading && !conversation){
+    return (
+      <AdminPage withBackButton={true} title="Message Not Found">
+        <div className="min-h-[80vh] flex items-center justify-center">
+          <span>Invalid Conversation</span>
+        </div>
+      </AdminPage>
+    )
+  }
+
   return (
     <div className="flex flex-col border rounded-lg shadow-md">
       <div className="w-full bg-card p-4 flex items-center gap-2">
@@ -46,7 +63,9 @@ export default function ChatWindow({
         {otherUser?.name}
       </div>
       <div className="overflow-auto h-[61vh] p-4 space-y-3">
-        {messages.map((m) => (
+        {messages.length > 0 ?
+        
+        messages.map((m) => (
           <div
             key={m.id}
             className={`max-w-[70%] w-fit p-3 rounded-xl break-words flex flex-col gap-1 ${
@@ -61,7 +80,12 @@ export default function ChatWindow({
               {new Date(m.created_at).toLocaleTimeString()}
             </div>
           </div>
-        ))}
+        ))
+        :
+        <div>
+          <span>No Messsages.</span>
+        </div>
+        }
         <div ref={endRef} />
       </div>
 

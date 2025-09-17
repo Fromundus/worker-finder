@@ -1,35 +1,32 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import api from "@/api/axios";
 import { useAuth } from "@/store/auth";
 import AdminPageMain from "@/components/custom/AdminPageMain";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { format, formatDistanceToNow } from "date-fns";
+import { Conversation } from "@/types/Conversation";
 
-type Conversation = {
-  id: number;
-  user_one: { id: number; name: string };
-  user_two: { id: number; name: string };
-  messages: { id: number; body: string }[];
-  last_message_at: string;
-};
+type OutleProps = {
+  conversations: Conversation[];
+  fetchConversations: () => void;
+}
 
 export default function MessagesPage() {
   const { user } = useAuth();
-  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const { conversations, fetchConversations }: OutleProps = useOutletContext();
+    
   const navigate = useNavigate();
 
   const currentUserId = user.id;
 
-  useEffect(() => {
-    api.get("/conversations").then((res) => setConversations(res.data));
-  }, []);
-
   const getOtherUser = (c: Conversation) =>
-    c.user_one.id === currentUserId ? c.user_two : c.user_one;
+  c.user_one.id === currentUserId ? c.user_two : c.user_one;
 
-  console.log(conversations);
+  React.useEffect(() => {
+    fetchConversations();
+  }, []);
 
   return (
 

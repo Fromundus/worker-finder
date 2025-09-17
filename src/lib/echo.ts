@@ -30,7 +30,7 @@ import Pusher from "pusher-js";
 const { token } = useAuth.getState();
 
 // Enable Pusher debugging
-Pusher.logToConsole = true;
+// Pusher.logToConsole = true;
 
 const echo = new Echo({
   broadcaster: "pusher",
