@@ -32,6 +32,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import MessageButton from "@/components/MessageButton";
 
 const WorkerApplications = () => {
   const { user } = useAuth();
@@ -143,6 +144,7 @@ const WorkerApplications = () => {
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
+          <MessageButton userId={employer.id} />
           <p className="text-sm text-muted-foreground">{job.description}</p>
           <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
             {location && (

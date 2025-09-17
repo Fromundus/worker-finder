@@ -36,6 +36,7 @@ import AdminDashboard from "./pages/Admin/AdminDashboard";
 import WorkerJobDetails from "./pages/Worker/WorkerJobDetails";
 import AdminProfilePage from "./pages/Admin/AdminProfilePage";
 import AdminProfileUpdatePage from "./pages/Admin/AdminProfileUpdatePage";
+import ConversationPage from "./pages/ConversationPage";
 
 const queryClient = new QueryClient();
 
@@ -79,6 +80,7 @@ const App = () => {
                 <Route path="bookings" element={<WorkerBookings />} />
                 <Route path="feedbacks" element={<Feedbacks />} />
                 <Route path="messages" element={<MessagesPage />} />
+                <Route path="messages/:conversationId" element={<ConversationPage />} />
                 <Route path="notifications" element={<Notifications />} />
                 <Route path="profile" element={<ProfilePage />} />
                 <Route path="profile/update" element={<ProfileUpdatePage />} />
@@ -94,6 +96,7 @@ const App = () => {
                 <Route path="bookings" element={<EmployerBookings />} />
                 <Route path="feedbacks" element={<Feedbacks />} />
                 <Route path="messages" element={<MessagesPage />} />
+                <Route path="messages/:conversationId" element={<ConversationPage />} />
                 <Route path="notifications" element={<Notifications />} />
                 <Route path="profile" element={<ProfilePage />} />
                 <Route path="profile/update" element={<ProfileUpdatePage />} />

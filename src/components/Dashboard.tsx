@@ -100,17 +100,17 @@ export default function Dashboard() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
-                  {/* <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                  <DropdownMenuSeparator /> */}
-                  {/* <DropdownMenuItem onClick={() => navigate(`/${user.role}/profile`)}>
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => navigate(`/${user.role}/profile`)}>
                     <User className="mr-2 h-4 w-4" />
                     Profile
-                  </DropdownMenuItem> */}
-                  {/* <DropdownMenuItem onClick={() => navigate(`/${user.role}/settings`)}>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate(`/${user.role}/profile/update`)}>
                     <Settings className="mr-2 h-4 w-4" />
                     Settings
-                  </DropdownMenuItem> */}
-                  {/* <DropdownMenuSeparator /> */}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleLogout}>
                     Log out
                   </DropdownMenuItem>

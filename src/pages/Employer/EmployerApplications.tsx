@@ -17,12 +17,16 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue
 } from "@/components/ui/select";
 import MapFinderDialog from '@/components/MapFinder';
+import MessageButton from '@/components/MessageButton';
+import { Link } from 'react-router-dom';
+import { useAuth } from '@/store/auth';
 
 const EmployerApplications = () => {
   const [applications, setApplications] = useState<any[]>([]);
   const [jobs, setJobs] = useState<any[]>([]);
   const [selectedJobId, setSelectedJobId] = useState<string>("all");
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
 
   // Fetch applications and jobs
   useEffect(() => {
@@ -105,6 +109,14 @@ const EmployerApplications = () => {
           </div>
         </CardHeader>
         <CardContent className="space-y-4 flex flex-col justify-between">
+          <div className='grid grid-cols-2 w-full gap-2'>
+            <Link to={`/${user.role}/profile/${worker.id}`}>
+                <Button variant="outline" className='w-full'>
+                    View Worker Profile
+                </Button>
+            </Link>
+            <MessageButton userId={worker.id} />
+          </div>
           <div className='flex flex-col gap-4'>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
               <div>

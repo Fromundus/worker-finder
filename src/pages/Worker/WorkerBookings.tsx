@@ -34,6 +34,9 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import MessageButton from "@/components/MessageButton";
+import { Link } from "react-router-dom";
+import { useAuth } from "@/store/auth";
 
 const WorkerBookings = () => {
   const [bookings, setBookings] = useState<any[]>([]);
@@ -43,6 +46,8 @@ const WorkerBookings = () => {
   const [selectedBooking, setSelectedBooking] = useState<any | null>(null);
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
+
+  const { user } = useAuth();
 
   // Fetch bookings for worker
   const fetchBookings = async () => {
@@ -222,6 +227,15 @@ const WorkerBookings = () => {
               <Star className="h-4 w-4" /> Rate Worker
             </Button>
           )}
+
+          <div className='flex items-center gap-2'>
+            <Link to={`/${user.role}/profile/${employer.id}`}>
+                <Button variant="outline">
+                    View Employer Profile
+                </Button>
+            </Link>
+            <MessageButton userId={employer.id} />
+          </div>
         </CardContent>
       </Card>
     );

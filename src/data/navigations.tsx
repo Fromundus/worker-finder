@@ -56,12 +56,12 @@ export const workerNavigations = [
     icon: Bell,
     group: "Navigation"
   },
-  {
-    title: "Profile",
-    url: "profile",
-    icon: User,
-    group: "Navigation"
-  },
+  // {
+  //   title: "Profile",
+  //   url: "profile",
+  //   icon: User,
+  //   group: "Navigation"
+  // },
 ];
 
 export const employerNavigations = [
@@ -107,12 +107,12 @@ export const employerNavigations = [
     icon: Bell,
     group: "Navigation"
   },
-  {
-    title: "Profile",
-    url: "profile",
-    icon: User,
-    group: "Navigation"
-  },
+  // {
+  //   title: "Profile",
+  //   url: "profile",
+  //   icon: User,
+  //   group: "Navigation"
+  // },
 ];
 
 export const adminNavigations = [
@@ -134,10 +134,10 @@ export const adminNavigations = [
     icon: FileText,
     group: "Navigation"
   },
-  {
-    title: "Profile",
-    url: "profile",
-    icon: User,
-    group: "Navigation"
-  },
+  // {
+  //   title: "Profile",
+  //   url: "profile",
+  //   icon: User,
+  //   group: "Navigation"
+  // },
 ]

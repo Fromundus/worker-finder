@@ -39,6 +39,8 @@ import {
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import MapFinderDialog from "@/components/MapFinder";
+import MessageButton from "@/components/MessageButton";
+import { Link } from "react-router-dom";
 
 const EmployerBookings = () => {
   const { user } = useAuth();
@@ -199,6 +201,15 @@ const EmployerBookings = () => {
               <Star className="h-4 w-4" /> Rate Worker
             </Button>
           )}
+
+          <div className='flex items-center gap-2'>
+            <Link to={`/${user.role}/profile/${worker.id}`}>
+                <Button variant="outline">
+                    View Worker Profile
+                </Button>
+            </Link>
+            <MessageButton userId={worker.id} />
+          </div>
         </CardContent>
       </Card>
     );

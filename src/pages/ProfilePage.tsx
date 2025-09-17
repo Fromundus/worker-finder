@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import MessageButton from "@/components/MessageButton";
 
 const ProfilePage = () => {
   const { id } = useParams();
@@ -228,6 +229,8 @@ const ProfilePage = () => {
                 </div>
               </div>
             )}
+
+            {user.id !== profile.id && <MessageButton userId={profile.id} />}
           </CardContent>
         </Card>
 

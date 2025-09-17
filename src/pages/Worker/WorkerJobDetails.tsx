@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import ButtonWithLoading from "@/components/custom/ButtonWithLoading";
+import MessageButton from "@/components/MessageButton";
 
 const WorkerJobDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -170,6 +171,7 @@ const WorkerJobDetails = () => {
 
             {/* Apply Button */}
             <div className="flex justify-end gap-2">
+                <MessageButton userId={job.user.id} />
                 <Link to={`/${user.role}/profile/${job.user.id}`}>
                     <Button variant="outline">
                         View Employer Profile

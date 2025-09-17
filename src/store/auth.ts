@@ -41,7 +41,7 @@ export const useAuth = create<AuthStore>()(
       fetchUser: async () => {
         try {
           const res = await api.get('/me');
-          console.log(res);
+          // console.log(res);
           if(res.data.status === "inactive"){
             localStorage.removeItem('auth-storage');
             set({ user: null, token: null });

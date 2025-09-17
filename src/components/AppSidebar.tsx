@@ -67,7 +67,7 @@ export function AppSidebar() {
     const fetchNotifications = async () => {
       try {
         const res = await api.get("/notifications-count");
-        console.log(res);
+        // console.log(res);
         setNotifications(res.data);
       } catch (err) {
         console.error(err);
