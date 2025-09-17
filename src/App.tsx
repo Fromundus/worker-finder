@@ -107,6 +107,7 @@ const App = () => {
             <Route element={<PrivateRoute requiredRole="admin" />}>
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<AdminDashboard />} />
+                <Route path="feedbacks" element={<Feedbacks />} />
                 <Route path="accounts" element={<AccountsPage />} />
                 <Route path="accounts/:id" element={<ProfilePage />} />
                 <Route path="profile" element={<AdminProfilePage />} />

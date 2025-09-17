@@ -5,12 +5,20 @@ import { Briefcase, Building, MessageSquare, Star, User } from "lucide-react";
 import { useAuth } from "@/store/auth";
 import api from "@/api/axios";
 import { toast } from "@/hooks/use-toast";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 
 const Feedbacks = () => {
   const { user } = useAuth();
   const [myFeedback, setMyFeedback] = useState<any[]>([]);
   const [averageRating, setAverageRating] = useState(0);
   const [ratingCounts, setRatingCounts] = useState<{ [key: number]: number }>({});
+
+  const [isFeedbackDialogOpen, setIsFeedbackDialogOpen] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
 
   useEffect(() => {
     const fetchFeedback = async () => {
@@ -33,10 +41,44 @@ const Feedbacks = () => {
     fetchFeedback();
   }, []);
 
+  const handleAddFeedback = () => {
+    setRating(0);
+    setComment("");
+    setIsFeedbackDialogOpen(true);
+  };
+
+  const handleSubmitFeedback = async () => {
+    try {
+      await api.post(`/system/feedbacks`, {
+        rating,
+        comment,
+      });
+      toast({
+        title: "Feedback submitted",
+        description: "Your feedback has been saved.",
+      });
+      setIsFeedbackDialogOpen(false);
+    } catch (err) {
+      console.error(err);
+      toast({
+        title: "Error",
+        description: err.response.data.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <AdminPageMain
       title="Feedbacks"
       description={user.role === "worker" ? "What employers say about your work" : "What workers say about you"}
+      topAction={
+        <>
+          {user.role === "worker" || user.role === "employer" && <Button className="bg-yellow-500 hover:bg-yellow-600 text-white" onClick={handleAddFeedback}>
+            <Star /> Rate the System
+          </Button>}
+        </>
+      }
     >
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Overall Rating */}
@@ -46,7 +88,7 @@ const Feedbacks = () => {
             <CardDescription>
               {user.role === "worker"
                 ? "Your average rating from employers"
-                : "Your average rating from workers"}
+                : user.role === "employer" ? "Your average rating from workers" : "System average rating"}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -192,6 +234,60 @@ const Feedbacks = () => {
           </Card>
         )}
       </div>
+
+      <Dialog open={isFeedbackDialogOpen} onOpenChange={setIsFeedbackDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Rate the System</DialogTitle>
+            <DialogDescription>
+              Provide a rating and feedback for the system
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            {/* Rating Stars */}
+            <div className="flex gap-2 justify-center">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  type="button"
+                  onClick={() => setRating(star)}
+                  className={`p-1 ${
+                    rating >= star ? "text-yellow-500" : "text-gray-400"
+                  }`}
+                >
+                  <Star className="h-12 w-12 fill-current" />
+                </button>
+              ))}
+            </div>
+
+            {/* Comment */}
+            <div>
+              <Label htmlFor="comment">Comment</Label>
+              <Textarea
+                id="comment"
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                placeholder="Write your feedback..."
+                rows={3}
+              />
+            </div>
+
+            {/* Actions */}
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setIsFeedbackDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button
+                disabled={rating === 0}
+                onClick={handleSubmitFeedback}
+              >
+                Submit
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </AdminPageMain>
   );
 };

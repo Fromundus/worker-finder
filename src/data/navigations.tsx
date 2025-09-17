@@ -129,11 +129,17 @@ export const adminNavigations = [
     group: "Navigation"
   },
   {
-    title: "Reports",
-    url: "reports",
-    icon: FileText,
+    title: "Feedbacks",
+    url: "feedbacks",
+    icon: Star,
     group: "Navigation"
   },
+  // {
+  //   title: "Reports",
+  //   url: "reports",
+  //   icon: FileText,
+  //   group: "Navigation"
+  // },
   // {
   //   title: "Profile",
   //   url: "profile",
