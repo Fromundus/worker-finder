@@ -19,44 +19,8 @@ import { Conversation } from "@/types/Conversation";
 import { toast } from "@/hooks/use-toast";
 import echo from "@/lib/echo";
 
-const pageNames: Record<string, string> = {
-  "/": "Dashboard Overview",
-  "/households": "Household & Purok Management", 
-  "/blotter": "Blotter & Complaints",
-  "/permits": "Permit & Document Issuance",
-  "/officials": "Officials & Staff",
-  "/businesses": "Business Registry",
-  "/reports": "Reports & Analytics",
-  
-  "/superadmin": "Dashboard Overview",
-  
-  "/superadmin/members": "Member Management",
-  "/superadmin/accounts": "Account Management",
-  "superadmin/accounts/": "Account Management",
-  "/superadmin/logs": "Activity Logs",
-
-  "/superadmin/monthly-rates": "Monthly Rates",
-};
-
 export default function Dashboard() {
-  function useCurrentPageName() {
-    const location = useLocation();
-    const pathname = location.pathname;
-
-    // Sort keys by length (longest first) so specific routes match before generic
-    const match = Object.keys(pageNames)
-      .sort((a, b) => b.length - a.length)
-      .find((route) => pathname.startsWith(route));
-
-    return match ? pageNames[match] : "Dashboard";
-  }
-  
-  // usage
-  const currentPageName = useCurrentPageName();
-
-  // const currentPageName = pageNames[location.pathname] || "Dashboard";
-
-  const { logout, user } = useAuth();
+  const { logout, user, token } = useAuth();
 
   const navigate = useNavigate();
   
@@ -79,7 +43,7 @@ export default function Dashboard() {
   }
 
   useEffect(() => {
-    if (!user) return;
+    if (!token) return;
 
     console.log(`users.${user.id}`);
 
@@ -100,10 +64,8 @@ export default function Dashboard() {
     return () => {
       echo.leave(`users.${user.id}`);
     };
-  }, [user?.id]);
+  }, [token]);
   
-  console.log(conversations);
-
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">

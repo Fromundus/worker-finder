@@ -284,7 +284,7 @@ const WorkerJobs = () => {
                       Posted {new Date(job.created_at).toLocaleDateString()}
                     </p>
                     <div className="flex items-center gap-2">
-                      <MessageButton userId={job.user.id} />
+                      {user && <MessageButton userId={job.user.id} />}
                       <Button 
                         variant="outline"
                         onClick={() => user ? navigate(`${job.id}`) : navigate('/login')}
