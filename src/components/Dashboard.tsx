@@ -17,8 +17,7 @@ import api from "@/api/axios";
 import { format } from "date-fns";
 import { Conversation } from "@/types/Conversation";
 import { toast } from "@/hooks/use-toast";
-import echo from "@/lib/echo";
-
+import { createEcho } from "@/lib/echo";
 export default function Dashboard() {
   const { logout, user, token } = useAuth();
 
@@ -45,11 +44,13 @@ export default function Dashboard() {
   useEffect(() => {
     if (!token) return;
 
-    console.log(`users.${user.id}`);
-
     fetchConversations();
 
+    const echo = createEcho(token);
+
     const channel = echo.private(`users.${user.id}`);
+    
+    console.log(token);
 
     channel.listen(".MessageSent", (message: any) => {
       console.log("📩 New message for you!", message);

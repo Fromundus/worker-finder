@@ -6,16 +6,16 @@ import React from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 
 const GuestLayout = () => {
-    const { user } = useAuth();
+    const { user, token } = useAuth();
     const navigate = useNavigate();
 
     React.useEffect(() => {
-        if (user && user.role) {
+        if (user && user.role && token) {
             navigate(`/${user.role}`);
         }
 
         window.scrollTo(0, 0);
-    }, [user, navigate]);
+    }, [user, navigate, token]);
 
     return (
         <div className="min-h-screen flex flex-col">

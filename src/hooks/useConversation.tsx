@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import echo from "../lib/echo";
 import api from "@/api/axios";
+import { createEcho } from "@/lib/echo";
+import { useAuth } from "@/store/auth";
 
 export type Message = {
   id: number;
@@ -14,6 +15,7 @@ export function useConversation(conversationId: number) {
   const [loading, setLoading] = useState<boolean>(false); 
   const [messages, setMessages] = useState<Message[]>([]);
   const [conversation, setConversation] = useState(null);
+  const { token } = useAuth();
 
   useEffect(() => {
     if (!conversationId) return;
@@ -38,6 +40,8 @@ export function useConversation(conversationId: number) {
 
     console.log("Subscribed to conversation", conversationId);
 
+    const echo = createEcho(token);
+
     // Listen for new messages
     const channel = echo.private(`conversation.${conversationId}`);
 
@@ -50,7 +54,7 @@ export function useConversation(conversationId: number) {
     return () => {
       echo.leave(`conversation.${conversationId}`);
     };
-  }, [conversationId]);
+  }, [conversationId, token]);
 
   const sendMessage = async (body: string) => {
     const res = await api.post(`/conversations/${conversationId}/messages`, { body });
