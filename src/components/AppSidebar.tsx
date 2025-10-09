@@ -83,21 +83,22 @@ export function AppSidebar() {
   }, []);
 
   return (
-    <Sidebar className="border-r">
-      <SidebarHeader className="p-4">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center">
-            {/* <span className="text-primary-foreground font-bold text-sm">F</span> */}
-            {/* <img className="w-8" src={logo} alt="" /> */}
-            <Briefcase />
-          </div>
-          <div>
-            <h2 className="font-semibold text-lg">CATANDUANES</h2>
-            <p className="text-xs text-muted-foreground">Worker Finder</p>
-          </div>
+    <Sidebar collapsible="icon" className="border-r transition-all duration-300">
+      <SidebarHeader className="p-4 flex items-center gap-3">
+        <div className="w-8 h-8 flex items-center justify-center">
+          <Briefcase />
+        </div>
+        <div
+          className="
+            overflow-hidden whitespace-nowrap transition-all duration-300
+            group-data-[collapsible=icon]:hidden
+          "
+        >
+          <h2 className="font-semibold text-lg">CATANDUANES</h2>
+          <p className="text-xs text-muted-foreground">Worker Finder</p>
         </div>
       </SidebarHeader>
-
+      
       <SidebarContent>
         {Object.entries(groupedItems).map(([group, items]) => (
           <SidebarGroup key={group}>
@@ -112,14 +113,22 @@ export function AppSidebar() {
                         end={`${item.url}` === `/${user.role}`}
                         className={({ isActive }) =>
                           `flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                            isActive
-                              ? "bg-accent text-foreground"
-                              : "hover:bg-accent"
+                            isActive ? "bg-accent text-foreground" : "hover:bg-accent"
                           }`
                         }
                       >
-                        <item.icon className="h-4 w-4" />
-                        <span className="flex items-center justify-between w-full">{item.title} {item.title === "Notifications" && notifications > 0 && <div className="bg-red-500 size-2 rounded-full"></div>}</span>
+                        <item.icon className="h-5 w-5 flex-shrink-0" />
+                        <span
+                          className="
+                            overflow-hidden whitespace-nowrap transition-all duration-300
+                            group-data-[collapsible=icon]:hidden
+                          "
+                        >
+                          {item.title}
+                          {item.title === "Notifications" && notifications > 0 && (
+                            <div className="bg-red-500 size-2 rounded-full inline-block ml-2"></div>
+                          )}
+                        </span>
                       </NavLink>
                   )
                 })}
