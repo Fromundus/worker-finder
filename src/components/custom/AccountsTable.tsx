@@ -277,7 +277,7 @@ export default function AccountsTable() {
                         onCheckedChange={() => toggleSelect(u.id)}
                       />
                     </TableCell>
-                    <TableCell>{u.name}</TableCell>
+                    <TableCell>{u.first_name} {u.middle_name} {u.last_name} {u.suffix}</TableCell>
                     <TableCell>{u.contact_number}</TableCell>
                     <TableCell>{u.email}</TableCell>
                     <TableCell>{u.role}</TableCell>

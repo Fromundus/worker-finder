@@ -1,7 +1,7 @@
 import AdminPageMain from "@/components/custom/AdminPageMain";
 import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Award, Briefcase, Building, Clock, Mail, PenBox, Phone, Star, User } from "lucide-react";
+import { Award, Briefcase, Building, Clock, Glasses, Mail, PenBox, Phone, Star, User as UserIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/store/auth";
@@ -20,11 +20,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import MessageButton from "@/components/MessageButton";
+import User from "@/types/User";
+import ipconfig from "@/ipconfig";
 
 const ProfilePage = () => {
   const { id } = useParams();
   const { user, token } = useAuth();
-  const [profile, setProfile] = useState<any>(null);
+  const [profile, setProfile] = useState<User>(null);
   const [myFeedback, setMyFeedback] = useState<any[]>([]);
   const [completedJobs, setCompletedJobs] = useState(0);
   const [totalApplications, setTotalApplications] = useState(0);
@@ -39,6 +41,10 @@ const ProfilePage = () => {
     description: "",
     salary: 0,
   });
+
+  const [selected, setSelected] = useState<number[]>([]);
+  const [loading, setLoading] = useState(false);
+
 
   const handleChangeBookingData = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -83,31 +89,32 @@ const ProfilePage = () => {
     url = "/profile"
   }
 
+  const fetchProfile = async () => {
+    try {
+      const res = await api.get(url, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      console.log(res);
+
+      setProfile(res.data.user);
+      setCompletedJobs(res.data.completedJobs);
+      setTotalApplications(res.data.totalApplications);
+      setMyFeedback(res.data.feedback);
+      setAverageRating(res.data.averageRating);
+      setTotalJobPosts(res.data.totalJobPosts);
+      setTotalBookings(res.data.totalBookings);
+    } catch (err) {
+      console.error(err);
+      toast({
+        title: "Error",
+        description: "Failed to load profile data",
+        variant: "destructive",
+      });
+    }
+  };
+
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const res = await api.get(url, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        console.log(res);
-
-        setProfile(res.data.user);
-        setCompletedJobs(res.data.completedJobs);
-        setTotalApplications(res.data.totalApplications);
-        setMyFeedback(res.data.feedback);
-        setAverageRating(res.data.averageRating);
-        setTotalJobPosts(res.data.totalJobPosts);
-        setTotalBookings(res.data.totalBookings);
-      } catch (err) {
-        console.error(err);
-        toast({
-          title: "Error",
-          description: "Failed to load profile data",
-          variant: "destructive",
-        });
-      }
-    };
 
     fetchProfile();
   }, [token]);
@@ -129,6 +136,35 @@ const ProfilePage = () => {
       </AdminPageMain>
     );
   }
+
+  const updateStatus = async (ids: number[], status: string) => {
+    if (!ids.length) return;
+    setLoading(true);
+
+    const data = {
+      ids: ids,
+      status: status,
+    }
+
+    try {
+      await api.put("/update-status", data);
+
+      toast({
+        title: "Updated Successfully",
+      });
+      
+      setSelected([]);
+      fetchProfile();
+    } catch (err) {
+      console.log(err);
+      toast({
+        title: err.response.status,
+        description: err.response.data.message,
+        variant: "destructive",
+      });
+      setLoading(false);
+    }
+  };
 
   return (
     <AdminPageMain
@@ -161,17 +197,36 @@ const ProfilePage = () => {
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="flex items-center gap-4">
-              {/* <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
-                <User className="h-8 w-8 text-primary" />
-              </div> */}
               <div className="flex-1">
                 <p className="text-sm text-muted-foreground">Name</p>
                 <div className="flex items-center gap-2">
-                  <h2 className="text-2xl font-bold">{profile.name}</h2>
+                  <h2 className="text-2xl font-bold">
+                    {profile.first_name} {profile.middle_name} {profile.last_name} {profile.suffix}
+                  </h2>
                   <ProfileStatusBadge status={profile.status} />
                 </div>
               </div>
             </div>
+
+            {/* 🆕 Birthdate and Age */}
+            {profile.birth_day && (
+              <div className="flex items-center gap-3">
+                <Clock className="h-4 w-4 text-muted-foreground" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Birthdate</p>
+                  <p className="font-medium">
+                    {new Date(profile.birth_day).toLocaleDateString()} (
+                    {(() => {
+                      const birth = new Date(profile.birth_day);
+                      const ageDifMs = Date.now() - birth.getTime();
+                      const ageDate = new Date(ageDifMs);
+                      return Math.abs(ageDate.getUTCFullYear() - 1970);
+                    })()}{" "}
+                    years old)
+                  </p>
+                </div>
+              </div>
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex items-center gap-3">
@@ -188,6 +243,48 @@ const ProfilePage = () => {
                   <p className="font-medium text-xs">{profile.email}</p>
                 </div>
               </div>
+            </div>
+
+            {/* 🆕 Additional personal details */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm text-muted-foreground">Sex</p>
+                <p className="font-medium">{profile.sex}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Religion</p>
+                <p className="font-medium">{profile.religion}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Civil Status</p>
+                <p className="font-medium">{profile.civil_status}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Height</p>
+                <p className="font-medium">{profile.height} cm</p>
+              </div>
+            </div>
+
+            <div>
+              <div className="flex items-center gap-3 mb-3">
+                <Glasses className="h-4 w-4 text-muted-foreground" />
+                <p className="text-sm text-muted-foreground">Disabilities</p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {profile.disabilities
+                  ? profile.disabilities.split(",").map((skill: string, i: number) => (
+                      <Badge key={i} variant="default">
+                        {skill.trim()}
+                      </Badge>
+                    ))
+                  : <p className="text-muted-foreground text-sm">No disabilities listed</p>}
+              </div>
+              {profile.disability_specify && <div className="mt-2">
+                <p className="text-sm text-muted-foreground">Specific Disability</p>
+                <Badge variant="default">
+                  {profile?.disability_specify}
+                </Badge>
+              </div>}
             </div>
 
             {/* Worker-specific fields */}
@@ -207,6 +304,12 @@ const ProfilePage = () => {
                         ))
                       : <p className="text-muted-foreground text-sm">No skills listed</p>}
                   </div>
+                  <div className="mt-2">
+                    <p className="text-sm text-muted-foreground">Specific Skill</p>
+                    <Badge variant="default">
+                      {profile?.skill_specify}
+                    </Badge>
+                  </div>
                 </div>
 
                 <div className="flex items-center gap-3">
@@ -216,23 +319,108 @@ const ProfilePage = () => {
                     <p className="font-medium">{profile.experience || "N/A"}</p>
                   </div>
                 </div>
+
+                {/* 🆕 Educations */}
+                {profile.educations?.length > 0 && (
+                  <div className="mt-4">
+                    <p className="text-lg font-semibold mb-2 flex items-center gap-2">
+                      <Award className="h-4 w-4 text-muted-foreground" /> Education
+                    </p>
+                    <div className="space-y-2">
+                      {profile.educations.map((edu, i) => (
+                        <div key={i} className="border rounded-lg p-3">
+                          <p className="font-semibold">{edu.level}</p>
+                          <p className="text-sm">{edu.school_name}</p>
+                          {edu.course && <p className="text-sm text-muted-foreground">{edu.course}</p>}
+                          {edu.year_graduated && (
+                            <p className="text-xs text-muted-foreground">Year Graduated: {edu.year_graduated}</p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* 🆕 Certificates */}
+                {profile.certificates?.length > 0 && (
+                  <div className="mt-4">
+                    <p className="text-lg font-semibold mb-2 flex items-center gap-2">
+                      <Award className="h-4 w-4 text-muted-foreground" /> Certificates
+                    </p>
+                    <div className="grid md:grid-cols-1 gap-3">
+                      {profile.certificates.map((cert, i) => (
+                        <div key={i} className="border rounded-lg p-3">
+                          <p className="font-semibold">{cert.title}</p>
+                          <p className="text-sm text-muted-foreground">{cert.issuing_organization}</p>
+                          {cert.date_issued && (
+                            <p className="text-xs text-muted-foreground">
+                              Issued: {new Date(cert.date_issued).toLocaleDateString()}
+                            </p>
+                          )}
+                          {cert.certificate_photo && (
+                            <img
+                              src={`${ipconfig}/api/files/${cert.certificate_photo}`}
+                              alt={cert.title}
+                              className="mt-2 rounded-md border w-full object-cover"
+                            />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </>
             )}
 
             {/* Employer-specific fields */}
             {profile.role === "employer" && (
-              <div className="flex items-center gap-3">
-                <Briefcase className="h-4 w-4 text-muted-foreground" />
-                <div>
-                  <p className="text-sm text-muted-foreground">Business</p>
-                  <p className="font-medium">{profile.business_name || "N/A"}</p>
+              <>
+                <div className="flex items-center gap-3">
+                  <Briefcase className="h-4 w-4 text-muted-foreground" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">Employer Type</p>
+                    <p className="font-medium capitalize"><Badge>{profile.employer_type}</Badge></p>
+                  </div>
                 </div>
-              </div>
+                <div className="flex items-center gap-3">
+                  <Briefcase className="h-4 w-4 text-muted-foreground" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">Business</p>
+                    <p className="font-medium">{profile.business_name || "N/A"}</p>
+                  </div>
+                </div>
+              </>
             )}
 
-            {user.id !== profile.id && <MessageButton userId={profile.id} />}
+            {/* 🆕 Uploaded Images Section */}
+            <div className="mt-6">
+              <p className="text-lg font-semibold mb-2">Uploaded Documents</p>
+              <div className="grid md:grid-cols-1 gap-4">
+                {[
+                  { label: "Barangay Clearance", field: "barangay_clearance_photo" },
+                  { label: "Valid ID", field: "valid_id_photo" },
+                  { label: "Selfie with ID", field: "selfie_with_id_photo" },
+                  { label: "Business Permit", field: "business_permit_photo" },
+                  { label: "BIR Certificate", field: "bir_certificate_photo" },
+                ].map(({ label, field }) => (
+                  profile[field] && (
+                    <div key={field}>
+                      <p className="text-muted-foreground mb-1">{label}</p>
+                      <img
+                        src={`${ipconfig}/api/files/${profile[field]}`}
+                        alt={label}
+                        className="rounded-md border object-cover"
+                      />
+                    </div>
+                  )
+                ))}
+              </div>
+            </div>
+
+            {((user.id !== profile.id) && user.role !== "admin") && <MessageButton userId={profile.id} />}
           </CardContent>
         </Card>
+
 
         {/* Stats */}
         <div className="space-y-4">
@@ -326,7 +514,7 @@ const ProfilePage = () => {
                         {profile.role === "worker" ? (
                           <Building className="h-4 w-4 text-muted-foreground" />
                         ) : (
-                          <User className="h-4 w-4 text-muted-foreground" />
+                          <UserIcon className="h-4 w-4 text-muted-foreground" />
                         )}
                         <CardTitle className="text-lg">
                           {feedback.from_user.name}
@@ -416,9 +604,20 @@ const ProfilePage = () => {
                 Book
               </Button>
             </div>
+
           </div>
         </DialogContent>
       </Dialog>
+      {(user.role === "admin" && (profile.status === "pending" || profile.status === "inactive")) && <div className="flex justify-end gap-2">
+        <Button onClick={() => updateStatus([profile.id], "active")}>
+          Verify/Activate
+        </Button>
+      </div>}
+      {(user.role === "admin" && (profile.status === "active")) && <div className="flex justify-end gap-2">
+        <Button variant="destructive" onClick={() => updateStatus([profile.id], "inactive")}>
+          Deactivate
+        </Button>
+      </div>}
     </AdminPageMain>
   );
 };

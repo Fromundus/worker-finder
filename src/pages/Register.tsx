@@ -40,6 +40,7 @@ type FormData = {
   suffix: string;
   contact_number: string;
   email: string;
+  birth_day: string;
   password: string;
   password_confirmation: string;
   role: "worker" | "employer";
@@ -87,6 +88,7 @@ const Register = () => {
     suffix: "",
     contact_number: "",
     email: "",
+    birth_day: "",
     password: "",
     password_confirmation: "",
     role: "worker",
@@ -132,57 +134,6 @@ const Register = () => {
     }));
     setErrors(null);
   };
-
-  // const handleSubmit = async (e: FormEvent) => {
-  //   e.preventDefault();
-  //   setLoading(true);
-  //   setErrors(null);
-
-  //   try {
-  //     const res = await api.post("/register", formData);
-  //     // login(res.data.user, res.data.access_token);
-  //     console.log(res);
-  //     setLoading(false);
-  //     navigate('/login');
-  //     toast({
-  //       title: "Registered Sucessfully",
-  //     })
-  //   } catch (err: any) {
-  //     console.log(err);
-  //     setErrors(err.response?.data?.errors);
-  //     setLoading(false);
-  //   }
-  // };
-
-  // const handleSubmit = async (e: FormEvent) => {
-  //   e.preventDefault();
-  //   setLoading(true);
-  //   setErrors(null);
-
-  //   const data = new FormData();
-  //   Object.entries(formData).forEach(([key, value]) => {
-  //     if (Array.isArray(value)) {
-  //       data.append(key, JSON.stringify(value));
-  //     } else if (value instanceof File) {
-  //       data.append(key, value);
-  //     } else {
-  //       data.append(key, value ?? "");
-  //     }
-  //   });
-
-  //   try {
-  //     const res = await api.post("/register", data, {
-  //       headers: { "Content-Type": "multipart/form-data" },
-  //     });
-  //     navigate("/login");
-  //     toast({ title: "Registered Successfully" });
-  //   } catch (err: any) {
-  //     console.log(err);
-  //     setErrors(err.response?.data?.errors);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -232,6 +183,20 @@ const Register = () => {
     }
   };
 
+  const calculateAge = (birthDate: string): number => {
+    const birth = new Date(birthDate);
+    const today = new Date();
+
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+
+    return age;
+  };
+
   return (
     <div className="min-h-screen py-12 flex items-center justify-center">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
@@ -264,6 +229,7 @@ const Register = () => {
                       suffix: "",
                       contact_number: "",
                       email: "",
+                      birth_day: "",
                       password: "",
                       password_confirmation: "",
                       role: value as 'worker' | 'employer',
@@ -362,7 +328,7 @@ const Register = () => {
                   />
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-4">
+                <div className="grid md:grid-cols-3 gap-4">
                   <InputWithLabel
                     id="contact_number"
                     name="contact_number"
@@ -386,6 +352,32 @@ const Register = () => {
                     disabled={loading}
                     error={errors?.email}
                   />
+
+                  <div className="flex flex-col gap-2">
+                    <InputWithLabel
+                      id="birth_day"
+                      name="birth_day"
+                      type="date"
+                      label="Birth Day"
+                      value={formData.birth_day || ""}
+                      onChange={(e) => {
+                        const birthDate = e.target.value;
+                        const age = calculateAge(birthDate);
+
+                        if (age < 18) {
+                          toast({
+                            title: "You must be at least 18 years old to register.",
+                            variant: "destructive",
+                          });
+                          setFormData((prev) => ({ ...prev, birth_day: "" }));
+                          return; // Prevent setting the invalid date
+                        }
+
+                        setFormData((prev) => ({ ...prev, birth_day: birthDate }));
+                      }}
+                      className="border rounded-lg px-3 py-2"
+                    />
+                  </div>
                 </div>
 
                 <div className="grid md:grid-cols-4 gap-4">
@@ -1040,14 +1032,6 @@ const Register = () => {
                 type="submit"
                 disabled={
                   loading 
-                  // || !formData.first_name ||
-                  // !formData.last_name ||
-                  // !formData.email ||
-                  // !formData.password ||
-                  // !formData.password_confirmation ||
-                  // !formData.location ||
-                  // !formData.lat ||
-                  // !formData.lng
                 }
                 className="w-full mt-4"
                 loading={loading}

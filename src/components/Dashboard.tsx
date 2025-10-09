@@ -23,7 +23,7 @@ export default function Dashboard() {
 
   const navigate = useNavigate();
   
-  const userName = user?.name?.split("").slice(0, 2).join("").toUpperCase();
+  const userName = user?.first_name?.split("").slice(0, 2).join("").toUpperCase();
 
   const handleLogout = async () => {
     try {
@@ -92,7 +92,7 @@ export default function Dashboard() {
                       <AvatarFallback className="bg-background border border-border text-foreground">{userName}</AvatarFallback>
                     </Avatar>
                     <div className="hidden md:block text-left">
-                      <div className="text-sm font-medium">{user.name}</div>
+                      <div className="text-sm font-medium">{user.first_name} {user.middle_name} {user.last_name} {user.suffix}</div>
                       <div className="text-xs text-muted-foreground">{user.email}</div>
                     </div>
                   </Button>

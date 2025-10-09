@@ -1,14 +1,15 @@
-import React, { useEffect, useState, ChangeEvent, FormEvent } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import InputWithLabel from "@/components/custom/InputWithLabel";
-import ButtonWithLoading from "@/components/custom/ButtonWithLoading";
-import { MapSelectorDialog } from "@/components/custom/MapSelectorDialog";
-import barangays from "@/data/barangays.json";
-import { useAuth } from "@/store/auth";
+import React, { ChangeEvent, FormEvent, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import api from "@/api/axios";
-import { toast } from "@/hooks/use-toast";
-import AdminPage from "@/components/custom/AdminPage";
+import { useAuth } from "@/store/auth";
+
+import ButtonWithLoading from "@/components/custom/ButtonWithLoading";
+import InputWithLabel from "@/components/custom/InputWithLabel";
+
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 import {
   Popover,
@@ -24,73 +25,239 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
-import { Check } from "lucide-react";
+import { Check, Trash } from "lucide-react";
+
+import { MapSelectorDialog } from "@/components/custom/MapSelectorDialog";
+import barangays from "@/data/barangays.json";
+import { toast } from "@/hooks/use-toast";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import AdminPage from "@/components/custom/AdminPage";
+import ipconfig from "@/ipconfig";
+
+type FormData = {
+  first_name: string;
+  middle_name: string;
+  last_name: string;
+  suffix: string;
+  contact_number: string;
+  email: string;
+  birth_day: string;
+  password: string;
+  password_confirmation: string;
+  role: string;
+  has_disability?: boolean;
+  disabilities?: string; // 🆕 Changed to string for backend JSON encoding
+  disability_specify?: string;
+
+  skills?: string;
+  skill_specify: string;
+  experience?: string;
+
+  employer_type?: string;
+
+  business_name?: string;
+  location?: string;
+  lat?: string;
+  lng?: string;
+
+  // 🆕 NEW: from backend
+  sex: string;
+  religion: string;
+  civil_status: string;
+  height: string;
+
+  // 🆕 NEW: images
+  barangay_clearance_photo?: File | null;
+  valid_id_photo?: File | null;
+  selfie_with_id_photo?: File | null;
+  business_permit_photo?: File | null;
+  bir_certificate_photo?: File | null;
+
+  // 🆕 NEW: dynamic sections
+  educations: { level: string; school_name: string; course?: string; year_graduated?: string }[];
+  certificates: { id: number | null; title: string; issuing_organization?: string; date_issued?: string; certificate_photo?: File | null }[];
+};
 
 const ProfileUpdatePage = () => {
-  const { user, token, login } = useAuth();
-  const [loading, setLoading] = useState(false);
-
-  const [formData, setFormData] = useState<any>({
-    name: "",
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [loading, setLoading] = React.useState<boolean>(false);
+  const [formData, setFormData] = React.useState<FormData>({
+    first_name: "",
+    middle_name: "",
+    last_name: "",
+    suffix: "",
     contact_number: "",
     email: "",
+    birth_day: "",
     password: "",
     password_confirmation: "",
+    role: "worker",
+    has_disability: false,
+    disabilities: "",
+    disability_specify: "",
+
     skills: "",
+    skill_specify: "",
     experience: "",
+
+    employer_type: "establishment",
+
     business_name: "",
-    location_id: "",
+    location: "",
     lat: "",
     lng: "",
+
+    sex: "",
+    religion: "",
+    civil_status: "",
+    height: "",
+
+    barangay_clearance_photo: null,
+    valid_id_photo: null,
+    selfie_with_id_photo: null,
+    business_permit_photo: null,
+    bir_certificate_photo: null,
+
+    educations: [{ level: "", school_name: "", course: "", year_graduated: "" }],
+    certificates: [{ id: null, title: "", issuing_organization: "", date_issued: "", certificate_photo: null }],
   });
 
   useEffect(() => {
-    if (user) {
-      setFormData({
-        name: user.name,
-        contact_number: user.contact_number || "",
-        email: user.email || "",
-        skills: user.skills || "",
-        experience: user.experience || "",
-        business_name: user.business_name || "",
-        location_id: user.location_id || "",
-        lat: user.lat || "",
-        lng: user.lng || "",
-      });
+    if(user){
+      setFormData((prev) => {
+        return {
+          first_name: user.first_name,
+          middle_name: user.middle_name,
+          last_name: user.last_name,
+          suffix: user.suffix,
+          contact_number: user.contact_number,
+          email: user.email,
+          birth_day: user.birth_day,
+          password: "",
+          password_confirmation: "",
+          role: user.role,
+          has_disability: user.has_disability ? true : false,
+          disabilities: user.disabilities,
+          disability_specify: user.disability_specify, 
+
+          skills: user.skills, 
+          skill_specify: user.skill_specify, 
+          experience: user.experience, 
+
+          employer_type: user.employer_type,
+
+          business_name: user.business_name,
+          // location: user.location_id,
+          lat: user.lat,
+          lng: user.lng,
+
+          sex: user.sex,
+          religion: user.religion,
+          civil_status: user.civil_status,
+          height: user.height,
+
+          barangay_clearance_photo: null,
+          valid_id_photo: null,
+          selfie_with_id_photo: null,
+          business_permit_photo: null,
+          bir_certificate_photo: null,
+
+          educations: user.educations,
+          certificates: user.certificates.map((item) => ({
+            id: item.id,
+            title: item.title,
+            issuing_organization: item.issuing_organization,
+            date_issued: item.date_issued,
+            certificate_photo: item.certificate_photo,
+          })),
+        }
+      })
     }
   }, [user]);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const [errors, setErrors] = React.useState<Record<string, string>>(null);
+
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData((prev: any) => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    setErrors(null);
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setErrors({}); // ✅ always initialize as object to avoid null errors
 
     try {
-      const res = await api.put("/profile", formData);
+      const data = new FormData();
 
-      toast({
-        title: "Profile Updated",
-        description: "Your profile information has been updated.",
+      // Append simple fields (excluding arrays)
+      Object.entries(formData).forEach(([key, value]) => {
+        if (["educations", "certificates"].includes(key)) return; // handle separately below
+        if (value instanceof File) {
+          data.append(key, value);
+        } else if (typeof value === "boolean") {
+          data.append(key, value ? "1" : "0");
+        } else {
+          data.append(key, value ?? "");
+        }
       });
 
-      login(res.data.user, token);
+      // ✅ Append educations as JSON (no files)
+      data.append("educations", JSON.stringify(formData.educations || []));
+
+      // ✅ Append certificates properly (including photos)
+      (formData.certificates || []).forEach((cert, i) => {
+        if (cert.id) data.append(`certificates[${i}][id]`, cert.id);
+        data.append(`certificates[${i}][title]`, cert.title || "");
+        data.append(`certificates[${i}][issuing_organization]`, cert.issuing_organization || "");
+        data.append(`certificates[${i}][date_issued]`, cert.date_issued || "");
+        if (cert.certificate_photo instanceof File) {
+          data.append(`certificates[${i}][certificate_photo]`, cert.certificate_photo);
+        }
+      });
+
+      // ✅ Send to backend
+      const res = await api.post("/profile/update", data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      console.log(res);
+
+      toast({ title: "Updated Successfully" });
+
+      if(res){
+        // window.location.reload();
+      }
+
     } catch (err: any) {
-      toast({
-        title: "Error",
-        description: err.response?.data?.message || "Profile update failed",
-        variant: "destructive",
-      });
+      console.error(err);
+      setErrors(err.response?.data?.errors || {});
     } finally {
       setLoading(false);
     }
   };
 
-  const selectedBarangay =
-    barangays.find((b) => b.id === formData.location_id) || null;
+  const calculateAge = (birthDate: string): number => {
+    const birth = new Date(birthDate);
+    const today = new Date();
+
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+
+    return age;
+  };
 
   return (
     <AdminPage
@@ -98,189 +265,784 @@ const ProfileUpdatePage = () => {
       title="Update Profile"
       description="Edit your personal information"
     >
-      <Card className="shadow-medium">
-        <CardHeader>
-          <CardTitle>Edit Profile</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <InputWithLabel
-              id="name"
-              name="name"
-              type="text"
-              label="Full Name"
-              placeholder="Enter your name"
-              value={formData.name}
-              onChange={handleChange}
-              disabled={loading}
-            />
-
-            <InputWithLabel
-              id="contact_number"
-              name="contact_number"
-              type="text"
-              label="Contact Number"
-              placeholder="09XXXXXXXXX"
-              value={formData.contact_number}
-              onChange={handleChange}
-              disabled={loading}
-            />
-
-            <InputWithLabel
-              id="email"
-              name="email"
-              type="email"
-              label="Email"
-              placeholder="Enter your email"
-              value={formData.email}
-              onChange={handleChange}
-              disabled={loading}
-            />
-
-            {/* Password */}
-            <InputWithLabel
-              id="password"
-              name="password"
-              type="password"
-              label="New Password"
-              placeholder="Enter new password (optional)"
-              value={formData.password}
-              onChange={handleChange}
-              disabled={loading}
-            />
-            <InputWithLabel
-              id="password_confirmation"
-              name="password_confirmation"
-              type="password"
-              label="Confirm Password"
-              placeholder="Confirm new password"
-              value={formData.password_confirmation}
-              onChange={handleChange}
-              disabled={loading}
-            />
-
-            {/* Worker-specific */}
-            {user.role === "worker" && (
-              <>
-                <InputWithLabel
-                  id="skills"
-                  name="skills"
-                  type="text"
-                  label="Skills"
-                  placeholder="Carpentry, Plumbing..."
-                  value={formData.skills}
-                  onChange={handleChange}
-                  disabled={loading}
-                />
-                <InputWithLabel
-                  id="experience"
-                  name="experience"
-                  type="text"
-                  label="Experience"
-                  placeholder="e.g. 5 years"
-                  value={formData.experience}
-                  onChange={handleChange}
-                  disabled={loading}
-                />
-              </>
-            )}
-
-            {/* Employer-specific */}
-            {user.role === "employer" && (
-              <InputWithLabel
-                id="business_name"
-                name="business_name"
-                type="text"
-                label="Business Name"
-                placeholder="Enter your business name"
-                value={formData.business_name}
-                onChange={handleChange}
-                disabled={loading}
-              />
-            )}
-
-            {/* Barangay Selector */}
-            <div className="flex flex-col gap-3">
-              <Label htmlFor="barangay">Barangay</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <button
-                    type="button"
-                    className={cn(
-                      "w-full justify-between rounded-md border border-input bg-background px-3 py-2 text-sm",
-                      !formData.location_id && "text-muted-foreground"
-                    )}
-                  >
-                    {selectedBarangay
-                      ? `${selectedBarangay.name}, ${selectedBarangay.municipality}`
-                      : "Select barangay"}
-                  </button>
-                </PopoverTrigger>
-                <PopoverContent className="w-[300px] p-0">
-                  <Command>
-                    <CommandInput placeholder="Search barangay..." />
-                    <CommandList>
-                      <CommandEmpty>No results found.</CommandEmpty>
-                      <CommandGroup className="max-h-60 overflow-y-auto">
-                        {barangays.map((b) => (
-                          <CommandItem
-                            key={b.id}
-                            value={`${b.name}, ${b.municipality}`}
-                            onSelect={() =>
-                              setFormData((prev: any) => ({
-                                ...prev,
-                                location_id: b.id,
-                                // lat: b.lat.toString(),
-                                // lng: b.lng.toString(),
-                              }))
-                            }
-                          >
-                            <Check
-                              className={cn(
-                                "mr-2 h-4 w-4",
-                                formData.location_id === b.id
-                                  ? "opacity-100"
-                                  : "opacity-0"
-                              )}
-                            />
-                            {b.name}, {b.municipality}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-            </div>
-
-            {/* Exact Location Picker */}
-            <div className="flex flex-col gap-3">
-              <Label>Exact Location</Label>
-              <MapSelectorDialog
-                lat={formData.lat}
-                lng={formData.lng}
-                onSelect={(lat, lng) =>
-                  setFormData((prev: any) => ({
-                    ...prev,
-                    lat,
-                    lng,
-                  }))
-                }
-              />
-              <div className="text-sm text-muted-foreground">
-                {formData.lat && formData.lng
-                  ? `Selected: Lat ${formData.lat}, Lng ${formData.lng}`
-                  : "No location selected"}
+      <Card className="max-w-full mx-auto w-full">
+        <CardContent className="p-6">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            {/* {errors && (
+              <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-2 w-full text-center">
+                <span className="text-destructive text-sm">{errors}</span>
               </div>
+            )} */}
+
+            <div className="space-y-4">
+              <span className="text-lg font-semibold">Personal Information</span>
+              {/* Basic Info */}
+
+              <div className="grid md:grid-cols-4 gap-4">
+                <InputWithLabel
+                  id="first_name"
+                  name="first_name"
+                  type="text"
+                  label="First Name"
+                  placeholder="Enter your first name"
+                  value={formData.first_name}
+                  onChange={handleChange}
+                  disabled={loading}
+                  error={errors?.first_name}
+                />
+
+                <InputWithLabel
+                  id="middle_name"
+                  name="middle_name"
+                  type="text"
+                  label="Middle Name"
+                  placeholder="Enter your middle name"
+                  value={formData.middle_name}
+                  onChange={handleChange}
+                  disabled={loading}
+                  error={errors?.middle_name}
+                />
+
+                <InputWithLabel
+                  id="last_name"
+                  name="last_name"
+                  type="text"
+                  label="Last Name"
+                  placeholder="Enter your last name"
+                  value={formData.last_name}
+                  onChange={handleChange}
+                  disabled={loading}
+                  error={errors?.last_name}
+                />
+
+                <InputWithLabel
+                  id="suffix"
+                  name="suffix"
+                  type="text"
+                  label="Suffix"
+                  placeholder="Suffix"
+                  value={formData.suffix}
+                  onChange={handleChange}
+                  disabled={loading}
+                  error={errors?.suffix}
+                />
+              </div>
+
+              <div className="grid md:grid-cols-3 gap-4">
+                <InputWithLabel
+                  id="contact_number"
+                  name="contact_number"
+                  type="text"
+                  label="Contact Number"
+                  placeholder="09XXXXXXXXX"
+                  value={formData.contact_number}
+                  onChange={handleChange}
+                  disabled={loading}
+                  error={errors?.contact_number}
+                />
+
+                <InputWithLabel
+                  id="email"
+                  name="email"
+                  type="email"
+                  label="Email"
+                  placeholder="Enter your email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  disabled={loading}
+                  error={errors?.email}
+                />
+
+                <div className="flex flex-col gap-2">
+                  <InputWithLabel
+                    id="birth_day"
+                    name="birth_day"
+                    type="date"
+                    label="Birth Day"
+                    value={formData.birth_day || ""}
+                    onChange={(e) => {
+                      const birthDate = e.target.value;
+                      const age = calculateAge(birthDate);
+
+                      if (age < 18) {
+                        toast({
+                          title: "You must be at least 18 years old to register.",
+                          variant: "destructive",
+                        });
+                        setFormData((prev) => ({ ...prev, birth_day: "" }));
+                        return; // Prevent setting the invalid date
+                      }
+
+                      setFormData((prev) => ({ ...prev, birth_day: birthDate }));
+                    }}
+                    className="border rounded-lg px-3 py-2"
+                  />
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-4 gap-4">
+                <div className="flex flex-col gap-3">
+                  <Label htmlFor="role">Sex</Label>
+                  <Select value={formData.sex} onValueChange={(value) => setFormData((prev) => ({ ...prev, sex: value }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="male">Male</SelectItem>
+                      <SelectItem value="female">Female</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {errors?.sex && <span className="text-destructive">{errors?.sex}</span>}
+                </div>
+                <InputWithLabel
+                  id="religion"
+                  name="religion"
+                  type="text"
+                  label="Religion"
+                  placeholder="Enter your religion"
+                  value={formData.religion}
+                  onChange={handleChange}
+                  disabled={loading}
+                  error={errors?.religion}
+                />
+                <InputWithLabel
+                  id="civil_status"
+                  name="civil_status"
+                  type="text"
+                  label="Civil Status"
+                  placeholder="Single, Married, etc."
+                  value={formData.civil_status}
+                  onChange={handleChange}
+                  disabled={loading}
+                  error={errors?.civil_status}
+                />
+                <InputWithLabel
+                  id="height"
+                  name="height"
+                  type="text"
+                  label="Height"
+                  placeholder="e.g., 165 cm"
+                  value={formData.height}
+                  onChange={handleChange}
+                  disabled={loading}
+                  error={errors?.height}
+                />
+              </div>
+
+              {/* Location Selector */}
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="flex flex-col gap-3">
+                  <Label htmlFor="location">Address (Barangay)</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <button
+                        type="button"
+                        className={cn(
+                          "w-full justify-between rounded-md border border-input bg-background px-3 py-2 text-sm",
+                          !formData.location && "text-muted-foreground"
+                        )}
+                      >
+                        {formData.location
+                          ? formData.location
+                          : "Select barangay"}
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[300px] p-0">
+                      <Command>
+                        <CommandInput placeholder="Search barangay..." />
+                        <CommandList>
+                          <CommandEmpty>No results found.</CommandEmpty>
+                          <CommandGroup className="max-h-60 overflow-y-auto">
+                            {barangays.map((b) => {
+                              const value = `${b.name}, ${b.municipality}`;
+                              return (
+                                <CommandItem
+                                  key={value}
+                                  value={value}
+                                  onSelect={() => {
+                                    setFormData((prev) => ({
+                                      ...prev,
+                                      location: value,
+                                      // lat: b.lat.toString(),
+                                      // lng: b.lng.toString(),
+                                    }));
+                                  }}
+                                >
+                                  <Check
+                                    className={cn(
+                                      "mr-2 h-4 w-4",
+                                      formData.location === value
+                                        ? "opacity-100"
+                                        : "opacity-0"
+                                    )}
+                                  />
+                                  {b.name}, {b.municipality}
+                                </CommandItem>
+                              );
+                            })}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                    {errors?.location && <span className="text-destructive text-sm">{errors?.location}</span>}
+                  </Popover>
+                </div>
+
+                {/* Map Picker */}
+                <div className="flex flex-col gap-3">
+                  <Label>Exact Location</Label>
+                  <MapSelectorDialog
+                    lat={formData.lat}
+                    lng={formData.lng}
+                    onSelect={(lat, lng) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        lat,
+                        lng,
+                      }))
+                    }
+                  />
+                  {errors?.lat && <span className="text-destructive text-sm">{errors?.lat}</span>}
+                  {errors?.lng && <span className="text-destructive text-sm">{errors?.lng}</span>}
+                </div>
+              </div>
+
+              {/* ===================== DISABILITY SECTION ===================== */}
+              <div className="space-y-2">
+                <Label>Do you have any disability?</Label>
+                <div className="flex gap-4 items-center">
+                  <label className="flex gap-2 items-center">
+                    <input
+                      type="radio"
+                      name="has_disability"
+                      checked={formData.has_disability === true}
+                      onChange={() => setFormData((prev) => ({ ...prev, has_disability: true }))}
+                    />
+                    Yes
+                  </label>
+                  <label className="flex gap-2 items-center">
+                    <input
+                      type="radio"
+                      name="has_disability"
+                      checked={formData.has_disability === false}
+                      onChange={() => setFormData((prev) => ({ ...prev, has_disability: false, disabilities: "", disability_specify: "" }))}
+                    />
+                    No
+                  </label>
+                </div>
+
+                {formData.has_disability && (
+                  <div className="space-y-2">
+                    <Label>Select Disability</Label>
+                    <div className="grid md:grid-cols-3 gap-2">
+                      {["Visual", "Hearing", "Mobility", "Speech", "Learning", "Intellectual", "Other"].map((d) => (
+                        <label key={d} className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            value={d}
+                            checked={formData.disabilities?.includes(d)}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              let updated = formData.disabilities ? formData.disabilities.split(",") : [];
+                              if (updated.includes(val)) updated = updated.filter((x) => x !== val);
+                              else updated.push(val);
+                              setFormData((prev) => ({ ...prev, disabilities: updated.join(",") }));
+                            }}
+                          />
+                          {d}
+                        </label>
+                      ))}
+                    </div>
+                    {formData.disabilities?.includes("Other") && (
+                      <InputWithLabel
+                        id="disability_specify"
+                        name="disability_specify"
+                        type="text"
+                        label="Please specify"
+                        placeholder="Specify disability"
+                        value={formData.disability_specify || ""}
+                        onChange={handleChange}
+                        disabled={loading}
+                      />
+                    )}
+                    {errors?.disabilities && <span className="text-destructive text-sm">{errors.disabilities}</span>}
+                  </div>
+                )}
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4">
+                <InputWithLabel
+                  id="password"
+                  name="password"
+                  type="password"
+                  label="Password"
+                  placeholder="Enter your password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  disabled={loading}
+                />
+
+                <InputWithLabel
+                  id="password_confirmation"
+                  name="password_confirmation"
+                  type="password"
+                  label="Confirm Password"
+                  placeholder="Confirm your password"
+                  value={formData.password_confirmation}
+                  onChange={handleChange}
+                  disabled={loading}
+                  error={errors?.password}
+                />
+              </div>
+
+              {/* Worker Fields */}
+              {formData.role === "worker" && (
+                <>
+                  {/* <InputWithLabel
+                    id="skills"
+                    name="skills"
+                    type="text"
+                    label="Skills"
+                    placeholder="e.g. Carpentry, Plumbing"
+                    value={formData.skills || ""}
+                    onChange={handleChange}
+                    disabled={loading}
+                    error={errors?.skills}
+                  /> */}
+                  <div className="space-y-4">
+                    <Label>Select Skills</Label>
+
+                    <div className="grid md:grid-cols-3 gap-2">
+                      {[
+                        "Carpentry",
+                        "Plumbing",
+                        "Electrical Work",
+                        "Housekeeping",
+                        "Cooking",
+                        "Driving",
+                        "Gardening",
+                        "Masonry",
+                        "Painting",
+                        "Laundry",
+                        "Babysitting",
+                        "Welding",
+                        "Sewing",
+                        "Other",
+                      ].map((skill) => (
+                        <label key={skill} className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            value={skill}
+                            checked={formData.skills?.split(",").includes(skill)}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              let updated = formData.skills ? formData.skills.split(",") : [];
+                              if (updated.includes(val)) {
+                                updated = updated.filter((s) => s !== val);
+                              } else {
+                                updated.push(val);
+                              }
+                              setFormData((prev) => ({ ...prev, skills: updated.join(",") }));
+                            }}
+                            disabled={loading}
+                          />
+                          {skill}
+                        </label>
+                      ))}
+                    </div>
+
+                    {/* Custom skill input when "Other" is selected */}
+                    {formData.skills?.includes("Other") && (
+                      <InputWithLabel
+                        id="skill_specify"
+                        name="skill_specify"
+                        type="text"
+                        label="Please specify other skill"
+                        placeholder="Specify skill"
+                        value={formData.skill_specify || ""}
+                        onChange={handleChange}
+                        disabled={loading}
+                      />
+                    )}
+
+                    {errors?.skills && (
+                      <span className="text-destructive text-sm">{errors.skills}</span>
+                    )}
+                  </div>
+
+                  <InputWithLabel
+                    id="experience"
+                    name="experience"
+                    type="text"
+                    label="Experience"
+                    placeholder="e.g. 5 years in construction"
+                    value={formData.experience || ""}
+                    onChange={handleChange}
+                    disabled={loading}
+                    error={errors?.experience}
+                  />
+                </>
+              )}
+
+              {/* ===================== EDUCATION SECTION ===================== */}
+              <Separator />
+              {formData.role === "worker" && (
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-lg font-semibold">Educational Background</span>
+
+                    <Button
+                      type="button"
+                      onClick={() =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          educations: [
+                            ...prev.educations,
+                            { level: "", school_name: "", course: "", year_graduated: "" },
+                          ],
+                        }))
+                      }
+                      size="sm"
+                    >
+                      + Add Education
+                    </Button>
+                  </div>
+
+                  {formData.educations.map((edu, i) => (
+                    <div key={i} className="grid md:grid-cols-4 gap-3 border p-3 rounded-lg">
+                      {/* LEVEL */}
+                      <div>
+                        <InputWithLabel
+                          id={`edu_level_${i}`}
+                          name="level"
+                          type="text"
+                          label="Level"
+                          placeholder="e.g., College"
+                          value={edu.level}
+                          onChange={(e) => {
+                            const newEdus = [...formData.educations];
+                            newEdus[i].level = e.target.value;
+                            setFormData((prev) => ({ ...prev, educations: newEdus }));
+                          }}
+                        />
+                        {errors?.[`educations.${i}.level`] && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {errors[`educations.${i}.level`][0]}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* SCHOOL NAME */}
+                      <div>
+                        <InputWithLabel
+                          id={`edu_school_${i}`}
+                          name="school_name"
+                          type="text"
+                          label="School Name"
+                          placeholder="Enter school name"
+                          value={edu.school_name}
+                          onChange={(e) => {
+                            const newEdus = [...formData.educations];
+                            newEdus[i].school_name = e.target.value;
+                            setFormData((prev) => ({ ...prev, educations: newEdus }));
+                          }}
+                        />
+                        {errors?.[`educations.${i}.school_name`] && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {errors[`educations.${i}.school_name`][0]}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* COURSE */}
+                      <div>
+                        <InputWithLabel
+                          id={`edu_course_${i}`}
+                          name="course"
+                          type="text"
+                          label="Course"
+                          placeholder="Enter course (optional)"
+                          value={edu.course || ""}
+                          onChange={(e) => {
+                            const newEdus = [...formData.educations];
+                            newEdus[i].course = e.target.value;
+                            setFormData((prev) => ({ ...prev, educations: newEdus }));
+                          }}
+                        />
+                        {errors?.[`educations.${i}.course`] && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {errors[`educations.${i}.course`][0]}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* YEAR GRADUATED */}
+                      <div>
+                        <InputWithLabel
+                          id={`edu_year_${i}`}
+                          name="year_graduated"
+                          type="text"
+                          label="Year Graduated"
+                          placeholder="YYYY"
+                          value={edu.year_graduated || ""}
+                          onChange={(e) => {
+                            const newEdus = [...formData.educations];
+                            newEdus[i].year_graduated = e.target.value;
+                            setFormData((prev) => ({ ...prev, educations: newEdus }));
+                          }}
+                        />
+                        {errors?.[`educations.${i}.year_graduated`] && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {errors[`educations.${i}.year_graduated`][0]}
+                          </p>
+                        )}
+                      </div>
+
+                      {i > 0 && (
+                        <Button
+                          type="button"
+                          onClick={() =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              educations: prev.educations.filter((_, idx) => idx !== i),
+                            }))
+                          }
+                          variant="destructive"
+                          size="sm"
+                        >
+                          Remove <Trash />
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {formData.role === "worker" && (
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-lg font-semibold">Certificates</span>
+                    <Button
+                      type="button"
+                      onClick={() =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          certificates: [
+                            ...prev.certificates,
+                            { title: "", issuing_organization: "", date_issued: "", certificate_photo: null },
+                          ],
+                        }))
+                      }
+                      size="sm"
+                    >
+                      + Add Certificate
+                    </Button>
+                  </div>
+
+                  {formData.certificates.map((cert, i) => (
+                    <div key={i} className="grid md:grid-cols-4 gap-3 border p-3 rounded-lg">
+                      {/* TITLE */}
+                      <div>
+                        <InputWithLabel
+                          id={`cert_title_${i}`}
+                          name="title"
+                          type="text"
+                          label="Title"
+                          placeholder="Certificate title"
+                          value={cert.title}
+                          onChange={(e) => {
+                            const newCerts = [...formData.certificates];
+                            newCerts[i].title = e.target.value;
+                            setFormData((prev) => ({ ...prev, certificates: newCerts }));
+                          }}
+                        />
+                        {errors?.[`certificates.${i}.title`] && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {errors[`certificates.${i}.title`][0]}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* ORGANIZATION */}
+                      <div>
+                        <InputWithLabel
+                          id={`cert_org_${i}`}
+                          name="issuing_organization"
+                          type="text"
+                          label="Issuing Organization"
+                          placeholder="e.g., TESDA"
+                          value={cert.issuing_organization || ""}
+                          onChange={(e) => {
+                            const newCerts = [...formData.certificates];
+                            newCerts[i].issuing_organization = e.target.value;
+                            setFormData((prev) => ({ ...prev, certificates: newCerts }));
+                          }}
+                        />
+                        {errors?.[`certificates.${i}.issuing_organization`] && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {errors[`certificates.${i}.issuing_organization`][0]}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* DATE ISSUED */}
+                      <div>
+                        <InputWithLabel
+                          id={`cert_date_${i}`}
+                          name="date_issued"
+                          type="date"
+                          label="Date Issued"
+                          value={cert.date_issued || ""}
+                          onChange={(e) => {
+                            const newCerts = [...formData.certificates];
+                            newCerts[i].date_issued = e.target.value;
+                            setFormData((prev) => ({ ...prev, certificates: newCerts }));
+                          }}
+                        />
+                        {errors?.[`certificates.${i}.date_issued`] && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {errors[`certificates.${i}.date_issued`][0]}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* PHOTO UPLOAD */}
+                      <div>
+                        <Label>Certificate Photo</Label>
+                        <img src={`${ipconfig}/api/files/${cert.certificate_photo}`} alt="" />
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0] || null;
+                            const newCerts = [...formData.certificates];
+                            newCerts[i].certificate_photo = file;
+                            setFormData((prev) => ({ ...prev, certificates: newCerts }));
+                          }}
+                        />
+                        {errors?.[`certificates.${i}.certificate_photo`] && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {errors[`certificates.${i}.certificate_photo`][0]}
+                          </p>
+                        )}
+                      </div>
+
+                      {i > 0 && (
+                        <Button
+                          type="button"
+                          onClick={() =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              certificates: prev.certificates.filter((_, idx) => idx !== i),
+                            }))
+                          }
+                          variant="destructive"
+                          size="sm"
+                        >
+                          Remove <Trash />
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Employer Fields */}
+              {formData.role === "employer" && (
+                <div className="space-y-4">
+                  <span className="text-lg font-semibold">Business Information</span>
+                  <div className="flex flex-col gap-3">
+                    <Label htmlFor="role">Employer Type</Label>
+                    <Select value={formData.employer_type} onValueChange={(value) => {
+                      setFormData((prev) => ({ 
+                        ...prev, 
+                        employer_type: value, 
+                        business_name: "",
+                        business_permit_photo: null,
+                        bir_certificate_photo: null,
+                      }));
+                    }}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="establishment">Establishment</SelectItem>
+                        <SelectItem value="household">Household</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {errors?.employer_type && <span className="text-destructive">{errors?.employer_type}</span>}
+                  </div>
+
+                  {formData.employer_type === "establishment" && <InputWithLabel
+                    id="business_name"
+                    name="business_name"
+                    type="text"
+                    label="Business Name"
+                    placeholder="Enter your business name"
+                    value={formData.business_name || ""}
+                    onChange={handleChange}
+                    disabled={loading}
+                    error={errors?.business_name}
+                  />}
+                </div>
+              )}
+
+              {/* ===================== REQUIRED IMAGES ===================== */}
+              <Separator />
+              <div className="space-y-4">
+                <span className="text-lg font-semibold">Required Images</span>
+                
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div className="flex flex-col gap-3">
+                    <Label>Barangay Clearance</Label>
+                    <img src={`${ipconfig}/api/files/${user.barangay_clearance_photo}`} alt="" />
+                    <input type="file" accept="image/*" name="barangay_clearance_photo" onChange={(e) => setFormData((p) => ({ ...p, barangay_clearance_photo: e.target.files?.[0] || null }))} />
+                    {errors?.barangay_clearance_photo && <span className="text-destructive text-sm">{errors?.barangay_clearance_photo}</span>}
+                  </div>
+                  <div className="flex flex-col gap-3">
+                    <Label>Valid ID</Label>
+                    <img src={`${ipconfig}/api/files/${user.valid_id_photo}`} alt="" />
+                    <input type="file" accept="image/*" name="valid_id_photo" onChange={(e) => setFormData((p) => ({ ...p, valid_id_photo: e.target.files?.[0] || null }))} />
+                    {errors?.valid_id_photo && <span className="text-destructive text-sm">{errors?.valid_id_photo}</span>}
+                  </div>
+                  <div className="flex flex-col gap-3">
+                    <Label>Selfie with ID</Label>
+                    <img src={`${ipconfig}/api/files/${user.selfie_with_id_photo}`} alt="" />
+                    <input type="file" accept="image/*" name="selfie_with_id_photo" onChange={(e) => setFormData((p) => ({ ...p, selfie_with_id_photo: e.target.files?.[0] || null }))} />
+                    {errors?.selfie_with_id_photo && <span className="text-destructive text-sm">{errors?.selfie_with_id_photo}</span>}
+                  </div>
+                  {formData.role === "employer" && formData.employer_type === "establishment" && (
+                    <>
+                      <div className="flex flex-col gap-3">
+                        <Label>Business Permit</Label>
+                        <img src={`${ipconfig}/api/files/${user.business_permit_photo}`} alt="" />
+                        <input type="file" accept="image/*" name="business_permit_photo" onChange={(e) => setFormData((p) => ({ ...p, business_permit_photo: e.target.files?.[0] || null }))} />
+                        {errors?.business_permit_photo && <span className="text-destructive text-sm">{errors?.business_permit_photo}</span>}
+                      </div>
+                      <div className="flex flex-col gap-3">
+                        <Label>BIR Certificate</Label>
+                        <img src={`${ipconfig}/api/files/${user.bir_certificate_photo}`} alt="" />
+                        <input type="file" accept="image/*" name="bir_certificate_photo" onChange={(e) => setFormData((p) => ({ ...p, bir_certificate_photo: e.target.files?.[0] || null }))} />
+                        {errors?.bir_certificate_photo && <span className="text-destructive text-sm">{errors?.bir_certificate_photo}</span>}
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+
+
             </div>
 
+            {/* Submit */}
             <ButtonWithLoading
               type="submit"
-              disabled={loading}
+              disabled={
+                loading 
+              }
+              className="w-full mt-4"
               loading={loading}
-              className="w-full"
             >
-              Save Changes
+              Update
             </ButtonWithLoading>
           </form>
         </CardContent>
