@@ -48,6 +48,7 @@ type FormData = {
   disability_specify?: string;
 
   skills?: string;
+  skill_specify: string;
   experience?: string;
 
   employer_type?: string;
@@ -94,6 +95,7 @@ const Register = () => {
     disability_specify: "",
 
     skills: "",
+    skill_specify: "",
     experience: "",
 
     employer_type: "establishment",
@@ -221,7 +223,7 @@ const Register = () => {
       });
 
       toast({ title: "Registered Successfully" });
-      // navigate("/login");
+      navigate("/login");
     } catch (err: any) {
       console.error(err);
       setErrors(err.response?.data?.errors || {});
@@ -233,7 +235,7 @@ const Register = () => {
   return (
     <div className="min-h-screen py-12 flex items-center justify-center">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-        <Card className="max-w-4xl mx-auto w-full">
+        <Card className="max-w-full mx-auto w-full">
           <CardHeader className="flex items-center">
             <CardTitle>
               <div className="flex flex-col gap-4 w-full text-center">
@@ -270,6 +272,7 @@ const Register = () => {
                       disability_specify: "",
 
                       skills: "",
+                      skill_specify: "",
                       experience: "",
 
                       employer_type: "establishment",
@@ -659,12 +662,12 @@ const Register = () => {
                       {/* Custom skill input when "Other" is selected */}
                       {formData.skills?.includes("Other") && (
                         <InputWithLabel
-                          id="skills_specify"
-                          name="skills_specify"
+                          id="skill_specify"
+                          name="skill_specify"
                           type="text"
                           label="Please specify other skill"
                           placeholder="Specify skill"
-                          value={formData.skills_specify || ""}
+                          value={formData.skill_specify || ""}
                           onChange={handleChange}
                           disabled={loading}
                         />
@@ -953,7 +956,8 @@ const Register = () => {
 
                 {/* Employer Fields */}
                 {formData.role === "employer" && (
-                  <>
+                  <div className="space-y-4">
+                    <span className="text-lg font-semibold">Business Information</span>
                     <div className="flex flex-col gap-3">
                       <Label htmlFor="role">Employer Type</Label>
                       <Select value={formData.employer_type} onValueChange={(value) => {
@@ -987,7 +991,7 @@ const Register = () => {
                       disabled={loading}
                       error={errors?.business_name}
                     />}
-                  </>
+                  </div>
                 )}
 
                 {/* ===================== REQUIRED IMAGES ===================== */}
