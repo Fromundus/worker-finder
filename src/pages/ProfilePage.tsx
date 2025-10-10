@@ -609,6 +609,9 @@ const ProfilePage = () => {
         </DialogContent>
       </Dialog>
       {(user.role === "admin" && (profile.status === "pending" || profile.status === "inactive")) && <div className="flex justify-end gap-2">
+        <Button variant="destructive" onClick={() => updateStatus([profile.id], "rejected")}>
+          Reject
+        </Button>
         <Button onClick={() => updateStatus([profile.id], "active")}>
           Verify/Activate
         </Button>

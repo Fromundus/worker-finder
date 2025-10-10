@@ -377,6 +377,7 @@ const Register = () => {
                       }}
                       className="border rounded-lg px-3 py-2"
                     />
+                    {errors?.birth_day && <span className="text-destructive text-sm">{errors?.birth_day}</span>}
                   </div>
                 </div>
 

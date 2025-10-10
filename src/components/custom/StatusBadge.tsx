@@ -7,9 +7,10 @@ const StatusBadge = ({ status }: { status: string }) => {
         ${status === "active" && "bg-blue-500 hover:bg-blue-600"}
         ${status === "inactive" && "bg-red-500 hover:bg-red-600"}
         ${status === "pending" && "bg-orange-500 hover:bg-orange-600"}
+        ${status === "rejected" && "bg-gray-500 hover:bg-gray-600"}
     `}>
         <span className='capitalize'>
-            {status === "active" ? "Verified" : status === "inactive" ? "Inactive" : "Pending"}
+            {status === "active" ? "Verified" : status === "inactive" ? "Inactive" : status === "rejected" ? "Rejected" : "Pending"}
         </span>
     </Badge>
   )
