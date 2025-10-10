@@ -30,6 +30,7 @@ import logo from "../assets/logo.png";
 import api from "@/api/axios";
 import { useEffect, useState } from "react";
 import { toast } from "@/hooks/use-toast";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 const menuItems = [
   {
@@ -107,29 +108,36 @@ export function AppSidebar() {
               <SidebarMenu>
                 {items.map((item, index) => {
                   return (
-                      <NavLink
-                        key={index}
-                        to={item.url}
-                        end={`${item.url}` === `/${user.role}`}
-                        className={({ isActive }) =>
-                          `flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                            isActive ? "bg-accent text-foreground" : "hover:bg-accent"
-                          }`
-                        }
-                      >
-                        <item.icon className="h-5 w-5 flex-shrink-0" />
-                        <span
-                          className="
-                            overflow-hidden whitespace-nowrap transition-all duration-300
-                            group-data-[collapsible=icon]:hidden
-                          "
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <NavLink
+                          key={index}
+                          to={item.url}
+                          end={`${item.url}` === `/${user.role}`}
+                          className={({ isActive }) =>
+                            `flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                              isActive ? "bg-accent text-foreground" : "hover:bg-accent"
+                            }`
+                          }
                         >
-                          {item.title}
-                          {item.title === "Notifications" && notifications > 0 && (
-                            <div className="bg-red-500 size-2 rounded-full inline-block ml-2"></div>
-                          )}
-                        </span>
-                      </NavLink>
+                          <item.icon className="h-5 w-5 flex-shrink-0" />
+                          <span
+                            className="
+                              overflow-hidden whitespace-nowrap transition-all duration-300
+                              group-data-[collapsible=icon]:hidden
+                            "
+                          >
+                            {item.title}
+                            {item.title === "Notifications" && notifications > 0 && (
+                              <div className="bg-red-500 size-2 rounded-full inline-block ml-2"></div>
+                            )}
+                          </span>
+                        </NavLink>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <span>{item.title}</span>
+                      </TooltipContent>
+                    </Tooltip>
                   )
                 })}
               </SidebarMenu>
