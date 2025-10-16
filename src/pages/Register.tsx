@@ -128,11 +128,20 @@ const Register = () => {
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
+    
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
     setErrors(null);
+
+    if (name === 'password') {
+      const error = validatePassword(value);
+      setErrors(prev => ({
+        ...prev,
+        passwordRegexError: error
+      }));
+    }
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -195,6 +204,15 @@ const Register = () => {
     }
 
     return age;
+  };
+
+  const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/;
+
+  const validatePassword = (password: string): string | undefined => {
+    if (!passwordRegex.test(password)) {
+      return "Password must be at least 6 characters, include an uppercase letter and a special character.";
+    }
+    return undefined;
   };
 
   return (
@@ -581,6 +599,7 @@ const Register = () => {
                     value={formData.password}
                     onChange={handleChange}
                     disabled={loading}
+                    error={errors?.passwordRegexError}
                   />
 
                   <InputWithLabel

@@ -20,6 +20,7 @@ import MapFinderDialog from '@/components/MapFinder';
 import MessageButton from '@/components/MessageButton';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/store/auth';
+import Modal from '@/components/custom/Modal';
 
 const EmployerApplications = () => {
   const [applications, setApplications] = useState<any[]>([]);
@@ -89,6 +90,7 @@ const EmployerApplications = () => {
   const ApplicationCard = ({ application }: { application: any }) => {
     const worker = application.user;
     const job = application.job_post;
+    const [open, setOpen] = useState(false);
 
     return (
       <Card className="shadow-soft hover:shadow-medium transition-smooth">
@@ -165,6 +167,29 @@ const EmployerApplications = () => {
           </div>
 
           {application.status === "pending" && (
+            <div className="flex gap-2 pt-2">
+              {/* <Button
+                className="bg-green-500 hover:bg-green-600 flex-1 text-white"
+                size="sm"
+                onClick={() => handleApplicationAction(application.id, "accepted")}
+              >
+                <CheckCircle className="mr-2 h-4 w-4" /> Accept
+              </Button> */}
+              <Modal open={open} setOpen={setOpen} title='Schedule Interview'>
+                
+              </Modal>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={() => handleApplicationAction(application.id, "rejected")}
+                className="flex-1"
+              >
+                <XCircle className="mr-2 h-4 w-4" /> Reject
+              </Button>
+            </div>
+          )}
+
+          {application.status === "forinterview" && (
             <div className="flex gap-2 pt-2">
               <Button
                 className="bg-green-500 hover:bg-green-600 flex-1 text-white"
