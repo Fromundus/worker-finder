@@ -108,10 +108,9 @@ export function AppSidebar() {
               <SidebarMenu>
                 {items.map((item, index) => {
                   return (
-                    <Tooltip>
+                    <Tooltip key={index}>
                       <TooltipTrigger>
                         <NavLink
-                          key={index}
                           to={item.url}
                           end={`${item.url}` === `/${user.role}`}
                           className={({ isActive }) =>

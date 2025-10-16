@@ -169,7 +169,7 @@ const Feedbacks = () => {
                           <User className="h-4 w-4 text-muted-foreground" />
                         )}
                         <CardTitle className="text-lg">
-                          {feedback.from_user.name}
+                          {`${feedback.from_user?.first_name} ${feedback.from_user?.middle_name} ${feedback.from_user?.last_name} ${feedback.from_user?.suffix ? feedback.from_user?.suffix : ""}`}
                         </CardTitle>
                       </div>
                       {job && (

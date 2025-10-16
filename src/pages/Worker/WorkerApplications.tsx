@@ -126,7 +126,7 @@ const WorkerApplications = () => {
               <CardTitle className="text-lg">{job?.title}</CardTitle>
               <CardDescription className="flex items-center gap-2 mt-1">
                 <Building className="h-4 w-4" />
-                {employer?.business_name || employer?.name}
+                {employer?.business_name || `${job.user?.first_name} ${job.user?.middle_name} ${job.user?.last_name} ${job.user?.suffix ? job.user?.suffix : ""}`}
               </CardDescription>
             </div>
             <Badge

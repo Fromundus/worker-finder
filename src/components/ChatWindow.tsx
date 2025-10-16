@@ -30,7 +30,7 @@ export default function ChatWindow({
   };
 
   const otherUser = conversation?.user_one.id === currentUserId ? conversation?.user_two : conversation?.user_one;
-  const userName = otherUser?.name?.split("").slice(0, 2).join("").toUpperCase();
+  const userName = otherUser?.first_name?.split("").slice(0, 2).join("").toUpperCase();
 
   const navigate = useNavigate();
 
@@ -60,7 +60,7 @@ export default function ChatWindow({
           <AvatarImage src="/placeholder-avatar.jpg" />
           <AvatarFallback className="bg-background border border-border text-foreground">{userName}</AvatarFallback>
         </Avatar>
-        {otherUser?.name}
+        {`${otherUser?.first_name} ${otherUser?.middle_name} ${otherUser?.last_name} ${otherUser?.suffix ? otherUser?.suffix : ""}`}
       </div>
       <div className="overflow-auto h-[61vh] p-4 space-y-3">
         {messages.length > 0 ?

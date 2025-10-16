@@ -240,7 +240,7 @@ const WorkerJobs = () => {
                         <span className="flex flex-col gap-2">
                           <span className="flex items-center gap-2 mt-1">
                             <Building className="h-4 w-4" />
-                            {job.user?.business_name || job.user?.name}
+                            {job.user?.business_name || `${job.user?.first_name} ${job.user?.middle_name} ${job.user?.last_name} ${job.user?.suffix ? job.user?.suffix : ""}`}
                           </span>
                           <span className="flex items-center gap-2 mt-1">
                             <Star className="h-4 w-4 text-yellow-500" />

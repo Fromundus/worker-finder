@@ -106,7 +106,7 @@ const WorkerJobDetails = () => {
                 <CardDescription className="flex flex-col gap-2 mt-2">
                     <span className="flex items-center gap-2">
                     <Building className="h-4 w-4" />
-                    {job.user?.business_name || job.user?.name}
+                    {job.user?.business_name || `${job.user?.first_name} ${job.user?.middle_name} ${job.user?.last_name} ${job.user?.suffix ? job.user?.suffix : ""}`}
                     </span>
                     <span className="flex items-center gap-2">
                     <Star className="h-4 w-4 text-yellow-500" />
@@ -156,7 +156,7 @@ const WorkerJobDetails = () => {
                 <div className="flex items-center gap-3 text-sm">
                 <User className="h-5 w-5 text-muted-foreground" />
                 <div>
-                    <p className="font-medium">{job.user?.name}</p>
+                    <p className="font-medium">{`${job.user?.first_name} ${job.user?.middle_name} ${job.user?.last_name} ${job.user?.suffix ? job.user?.suffix : ""}`}</p>
                     <p className="text-muted-foreground">{job.user?.email}</p>
                 </div>
                 </div>

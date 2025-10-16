@@ -95,7 +95,7 @@ const EmployerApplications = () => {
         <CardHeader>
           <div className="flex items-start justify-between">
             <div className="flex-1">
-              <CardTitle className="text-lg">{worker?.name}</CardTitle>
+              <CardTitle className="text-lg">{`${worker?.first_name} ${worker?.middle_name} ${worker?.last_name} ${worker?.suffix ? worker?.suffix : ""}`}</CardTitle>
               <CardDescription>{job?.title}</CardDescription>
             </div>
             <Badge className={`text-white

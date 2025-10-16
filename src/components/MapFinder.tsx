@@ -939,7 +939,7 @@ const MapFinderDialog: React.FC = () => {
 
                               <div className="flex flex-col gap-2 pt-2">
                                 <span className="text-lg font-semibold">Employer Info</span>
-                                <div>{loc.user.name ?? "Employer"}</div>
+                                <div>{`${loc.user?.first_name} ${loc.user?.middle_name} ${loc.user?.last_name} ${loc.user?.suffix ? loc.user?.suffix : ""}` || "Employer"}</div>
                                 <div>{loc.user.contact_number ?? "N/A"}</div>
                                 <div>{loc.user.email ?? "N/A"}</div>
                                 <div className="flex flex-col">
@@ -982,7 +982,7 @@ const MapFinderDialog: React.FC = () => {
                             <>
                               <div className="space-y-2">
                                 <span className="text-lg font-semibold">Worker Info</span>
-                                <div className="font-semibold">{loc.name ?? "Worker"}</div>
+                                <div className="font-semibold">{`${loc?.first_name} ${loc?.middle_name} ${loc?.last_name} ${loc?.suffix ? loc?.suffix : ""}` || "Worker"}</div>
                                 <div>{loc.contact_number ?? "N/A"}</div>
                                 <div>{loc.email ?? "N/A"}</div>
                                 <div className="flex flex-col">

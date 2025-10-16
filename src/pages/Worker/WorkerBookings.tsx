@@ -86,6 +86,7 @@ const WorkerBookings = () => {
         title: `Booking ${action}`,
         description: `The booking has been marked as ${action}.`,
       });
+      fetchBookings();
     } catch (err) {
       console.error(err);
       toast({
@@ -143,7 +144,7 @@ const WorkerBookings = () => {
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <CardTitle className="text-lg">
-                {employer?.business_name || employer?.name}
+                {employer?.business_name || `${employer?.first_name} ${employer?.middle_name} ${employer?.last_name} ${employer?.suffix ? employer?.suffix : ""}`}
               </CardTitle>
               <CardDescription>Employer</CardDescription>
             </div>
@@ -224,7 +225,7 @@ const WorkerBookings = () => {
               size="sm"
               onClick={() => handleAddFeedback(booking)}
             >
-              <Star className="h-4 w-4" /> Rate Worker
+              <Star className="h-4 w-4" /> Rate Employer
             </Button>
           )}
 
@@ -330,7 +331,7 @@ const WorkerBookings = () => {
       <Dialog open={isFeedbackDialogOpen} onOpenChange={setIsFeedbackDialogOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Rate Worker</DialogTitle>
+            <DialogTitle>Rate Employer</DialogTitle>
             <DialogDescription>
               Provide a rating and feedback for{" "}
               <span className="font-medium">

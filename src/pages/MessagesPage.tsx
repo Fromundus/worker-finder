@@ -35,7 +35,7 @@ export default function MessagesPage() {
         {conversations.map((c) => {
           const other = getOtherUser(c);
 
-          const userName = other?.name?.split("").slice(0, 2).join("").toUpperCase();
+          const userName = other?.first_name?.split("").slice(0, 2).join("").toUpperCase();
 
           return (
             <Card
@@ -51,7 +51,7 @@ export default function MessagesPage() {
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col gap-1">
-                  <div className="font-semibold">{other.name}</div>
+                  <div className="font-semibold">{`${other?.first_name} ${other?.middle_name} ${other?.last_name} ${other?.suffix ? other?.suffix : ""}`}</div>
                   <div className="text-sm text-muted-foreground truncate max-w-[200px]">
                     {c.messages[0]?.body || "No messages yet"}
                   </div>

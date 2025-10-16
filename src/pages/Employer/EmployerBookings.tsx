@@ -139,7 +139,7 @@ const EmployerBookings = () => {
               <CardTitle className="text-lg">{booking.job_title}</CardTitle>
               <CardDescription className="flex items-center gap-2 mt-1">
                 <User className="h-4 w-4" />
-                {worker?.name}
+                {`${worker?.first_name} ${worker?.middle_name} ${worker?.last_name} ${worker?.suffix ? worker?.suffix : ""}`}
               </CardDescription>
             </div>
             <Badge
