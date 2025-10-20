@@ -16,7 +16,7 @@ const InputWithLabel = ({ label, containerClassName, labelClassName, inputClassN
   const [show, setShow] = React.useState<boolean>(false);
 
   return (
-    <div className={`flex flex-col gap-2 ${containerClassName}`}>
+    <div className={`flex flex-col gap-3 ${containerClassName}`}>
         <div className='flex flex-col gap-3 relative'>
           {label && <Label htmlFor={props.id} className={`${labelClassName} cursor-pointer`}>
               {label}

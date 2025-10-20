@@ -528,7 +528,7 @@ const EmployerJobs = () => {
                     <ul className="space-y-2">
                       {job.applications.map((app: any) => (
                         <li key={app.id} className="flex items-center justify-between px-3 rounded-md">
-                          <span>{app.user?.name}</span>
+                          <span>{app.user?.first_name} {app.user?.middle_name} {app.user?.last_name} {app.user?.suffix}</span>
                           <div className='flex items-center gap-4'>
                             <Badge className={`
                               ${app.status === "active" && "bg-green-500 hover:bg-green-600 text-white"}  

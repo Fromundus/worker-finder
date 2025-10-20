@@ -33,6 +33,8 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import MessageButton from "@/components/MessageButton";
+import Modal from "@/components/custom/Modal";
+import ViewMap from "@/components/custom/ViewMap";
 
 const WorkerApplications = () => {
   const { user } = useAuth();
@@ -104,6 +106,7 @@ const WorkerApplications = () => {
 
   // Counts
   const pendingCount = applications.filter((a) => a.status === "pending").length;
+  const forInterviewCount = applications.filter((a) => a.status === "forinterview").length;
   const acceptedCount = applications.filter((a) => a.status === "accepted").length;
   const activeCount = applications.filter((a) => a.status === "active").length;
   const rejectedCount = applications.filter((a) => a.status === "rejected").length;
@@ -114,6 +117,8 @@ const WorkerApplications = () => {
     const job = application.job_post;
     const employer = job?.user;
     const location = job?.location;
+
+    const [locationModal, setLocationModal] = useState(false);
 
     return (
       <Card
@@ -132,6 +137,7 @@ const WorkerApplications = () => {
             <Badge
               className={`text-white
                 ${application.status === "pending" && "bg-orange-500"}
+                ${application.status === "forinterview" && "bg-blue-500"}
                 ${application.status === "accepted" && "bg-green-500"}
                 ${application.status === "active" && "bg-green-500"}
                 ${application.status === "rejected" && "bg-red-500"}
@@ -175,6 +181,21 @@ const WorkerApplications = () => {
             </div>
           </div>
 
+          {application.status === "forinterview" && <div className="flex flex-col gap-1">
+            <span>Interview Details</span>
+            <div className="space-y-2 text-sm text-muted-foreground flex flex-col">
+              <span>Date: {application.interview_date}</span>
+              <span>Location: {application.interview_location}</span>
+              <Modal open={locationModal} setOpen={setLocationModal} buttonClassName="w-fit h-9" title="Exact Location" buttonLabel={
+                "View Interview Location"
+              }> 
+                <>
+                  <ViewMap lat={application.lat} lng={application.lng} />
+                </>
+              </Modal>
+            </div>
+          </div>}
+
           <div className="flex items-center justify-between text-xs text-muted-foreground">
             <span>
               Applied {new Date(application.created_at).toLocaleDateString()}
@@ -199,7 +220,7 @@ const WorkerApplications = () => {
       description="Track your job application status"
     >
       {/* Status Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <Card className="shadow-soft">
           <CardContent className="p-4 flex items-center justify-between">
             <div>
@@ -207,6 +228,16 @@ const WorkerApplications = () => {
               <p className="text-2xl font-bold text-orange-500">{pendingCount}</p>
             </div>
             <Clock className="h-8 w-8 text-orange-500" />
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-soft">
+          <CardContent className="p-4 flex items-center justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground">For Interview</p>
+              <p className="text-2xl font-bold text-blue-500">{forInterviewCount}</p>
+            </div>
+            <CheckCircle className="h-8 w-8 text-blue-500" />
           </CardContent>
         </Card>
 
@@ -268,6 +299,7 @@ const WorkerApplications = () => {
         <TabsList>
           <TabsTrigger value="all">All ({applications.length})</TabsTrigger>
           <TabsTrigger value="pending">Pending ({pendingCount})</TabsTrigger>
+          <TabsTrigger value="forinterview">For Interview ({forInterviewCount})</TabsTrigger>
           <TabsTrigger value="accepted">Accepted ({acceptedCount})</TabsTrigger>
           <TabsTrigger value="active">Active ({activeCount})</TabsTrigger>
           <TabsTrigger value="rejected">Rejected ({rejectedCount})</TabsTrigger>
@@ -275,7 +307,7 @@ const WorkerApplications = () => {
           <TabsTrigger value="completed">Completed ({completedCount})</TabsTrigger>
         </TabsList>
 
-        {["all", "pending", "accepted", "active", "rejected", "withdrawn", "completed"].map((tab) => (
+        {["all", "pending", "forinterview", "accepted", "active", "rejected", "withdrawn", "completed"].map((tab) => (
           <TabsContent key={tab} value={tab} className="space-y-4">
             <div className="grid grid-cols-1 gap-4">
               {(tab === "all"

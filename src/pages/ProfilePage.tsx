@@ -1,7 +1,7 @@
 import AdminPageMain from "@/components/custom/AdminPageMain";
 import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Award, Briefcase, Building, Clock, Glasses, Mail, PenBox, Phone, Star, User as UserIcon } from "lucide-react";
+import { Award, Briefcase, Building, Clock, Glasses, Mail, PenBox, Phone, Plus, Star, User as UserIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/store/auth";
@@ -22,6 +22,9 @@ import { Textarea } from "@/components/ui/textarea";
 import MessageButton from "@/components/MessageButton";
 import User from "@/types/User";
 import ipconfig from "@/ipconfig";
+import Modal from "@/components/custom/Modal";
+import AddProject from "@/components/custom/AddProject";
+import ProjectList from "@/components/custom/ProjectList";
 
 const ProfilePage = () => {
   const { id } = useParams();
@@ -44,6 +47,8 @@ const ProfilePage = () => {
 
   const [selected, setSelected] = useState<number[]>([]);
   const [loading, setLoading] = useState(false);
+
+  const [projectModal, setProjectModal] = useState(false);
 
 
   const handleChangeBookingData = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -171,12 +176,23 @@ const ProfilePage = () => {
       title={id ? "Profile" : "My Profile"}
       description={id ? "User Profile Information" : "Manage your profile information"}
       topAction={
-        <>
+        <div className="flex items-center gap-2">
           {!id && <Link to={'update'}>
               <Button>
                   <PenBox /> Update
               </Button>
           </Link>}
+
+          {!id && profile.role === "worker" && user.role === "worker" &&
+          <Modal open={projectModal} setOpen={setProjectModal} title="Add Project" buttonLabel={
+            <>
+              <Plus /> Add Project
+            </>
+          }>
+            <AddProject setAddProjectModal={setProjectModal} />
+          </Modal>
+
+          }
 
           {id && profile.role === "worker" && user.role === "employer" && <Button
             className="bg-blue-500 text-white hover:bg-blue-700"
@@ -185,7 +201,7 @@ const ProfilePage = () => {
           >
             Book Worker
           </Button>}
-        </>
+        </div>
       }
     >
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -319,6 +335,8 @@ const ProfilePage = () => {
                     <p className="font-medium">{profile.experience || "N/A"}</p>
                   </div>
                 </div>
+
+                {profile.role === "worker" && <ProjectList userId={profile.id} />}
 
                 {/* 🆕 Educations */}
                 {profile.educations?.length > 0 && (

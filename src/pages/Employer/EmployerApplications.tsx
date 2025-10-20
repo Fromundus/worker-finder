@@ -8,7 +8,8 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
-  Clock, CheckCircle, XCircle, Star, MessageSquare, Users
+  Clock, CheckCircle, XCircle, Star, MessageSquare, Users,
+  Check
 } from 'lucide-react';
 import {
   Tabs, TabsContent, TabsList, TabsTrigger
@@ -21,6 +22,26 @@ import MessageButton from '@/components/MessageButton';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/store/auth';
 import Modal from '@/components/custom/Modal';
+
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import { Label } from '@/components/ui/label';
+import { MapSelectorDialog } from '@/components/custom/MapSelectorDialog';
+import barangays from "@/data/barangays.json";
+import { cn } from '@/lib/utils';
+import ButtonWithLoading from '@/components/custom/ButtonWithLoading';
+import InputWithLabel from '@/components/custom/InputWithLabel';
 
 const EmployerApplications = () => {
   const [applications, setApplications] = useState<any[]>([]);
@@ -53,10 +74,20 @@ const EmployerApplications = () => {
     fetchData();
   }, []);
 
-  const handleApplicationAction = async (applicationId: number, action: "accepted" | "rejected") => {
+  const handleApplicationAction = async (applicationId: number, action: "accepted" | "rejected" | "forinterview", data?: {
+    date: string;
+    location_id: string;
+    location: string;
+    lat: string;
+    lng: string;
+} ) => {
     try {
       const res = await api.put(`/applications/${applicationId}/status`, {
         status: action,
+        interview_date: data?.date ?? null,
+        interview_location: data?.location ?? null,
+        lat: data?.lat ?? null,
+        lng: data?.lng ?? null,
       });
       setApplications(prev =>
         prev.map(app => app.id === applicationId ? res.data.application : app)
@@ -81,6 +112,7 @@ const EmployerApplications = () => {
     : applications.filter(app => String(app.job_post?.id) === selectedJobId);
 
   const pendingApplications = jobFilteredApplications.filter(app => app.status === "pending");
+  const forInterviewApplications = jobFilteredApplications.filter(app => app.status === "forinterview");
   const acceptedApplications = jobFilteredApplications.filter(app => app.status === "accepted");
   const activeApplications = jobFilteredApplications.filter(app => app.status === "active");
   const rejectedApplications = jobFilteredApplications.filter(app => app.status === "rejected");
@@ -92,6 +124,14 @@ const EmployerApplications = () => {
     const job = application.job_post;
     const [open, setOpen] = useState(false);
 
+    const [data, setData] = useState({
+      date: "",
+      location_id: "",
+      location: "",
+      lat: "",
+      lng: "",
+    });
+
     return (
       <Card className="shadow-soft hover:shadow-medium transition-smooth">
         <CardHeader>
@@ -102,6 +142,7 @@ const EmployerApplications = () => {
             </div>
             <Badge className={`text-white
               ${application.status === "pending" && "bg-orange-500 hover:bg-orange-600"}
+              ${application.status === "forinterview" && "bg-blue-500 hover:bg-blue-600"}
               ${application.status === "accepted" && "bg-green-500 hover:bg-green-600"}
               ${application.status === "active" && "bg-green-500 hover:bg-green-600"}
               ${application.status === "rejected" && "bg-red-500 hover:bg-red-600"}
@@ -175,8 +216,100 @@ const EmployerApplications = () => {
               >
                 <CheckCircle className="mr-2 h-4 w-4" /> Accept
               </Button> */}
-              <Modal open={open} setOpen={setOpen} title='Schedule Interview'>
-                
+              <Modal open={open} setOpen={setOpen} title='Schedule Interview' buttonClassName='w-1/2 h-9' buttonLabel={
+                  'Schedule Interview'
+              }>
+                <div className='space-y-4'>
+                  <InputWithLabel
+                    id='date'
+                    name='date'
+                    type='date'
+                    label='Date'
+                    onChange={(e) => setData((prev) => {
+                      return {
+                        ...prev,
+                        date: e.target.value,
+                      }
+                    })}
+                  />
+
+                  <div className="flex flex-col gap-3">
+                    <Label htmlFor="address">Address (Barangay)</Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <button
+                          type="button"
+                          className={cn(
+                            "w-full justify-between rounded-md border border-input bg-background px-3 py-2 text-sm",
+                            !data.location_id && "text-muted-foreground"
+                          )}
+                        >
+                          {data.location_id
+                            ? `${barangays.find(b => b.id === Number(data.location_id))?.name}, ${barangays.find(b => b.id === Number(data.location_id))?.municipality}`
+                            : "Select barangay"}
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[300px] p-0">
+                        <Command>
+                          <CommandInput placeholder="Search barangay..." />
+                          <CommandList>
+                            <CommandEmpty>No results found.</CommandEmpty>
+                            <CommandGroup className="max-h-60 overflow-y-auto">
+                              {barangays.map((b) => (
+                                <CommandItem
+                                  key={b.id}
+                                  value={`${b.name}, ${b.municipality}`}
+                                  onSelect={() => {
+                                    setData((prev) => ({
+                                      ...prev,
+                                      location_id: b.id.toString(),
+                                      location: `${b.name.toString(), b.municipality.toString()}`,
+                                      lat: b.lat.toString(),
+                                      lng: b.lng.toString(),
+                                    }));
+                                  }}
+                                >
+                                  <Check
+                                    className={cn(
+                                      "mr-2 h-4 w-4",
+                                      data.location_id === b.id.toString() ? "opacity-100" : "opacity-0"
+                                    )}
+                                  />
+                                  {b.name}, {b.municipality}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                  
+                  {/* Map Selector */}
+                  <div className="flex flex-col gap-3">
+                    <Label>Exact Location</Label>
+                    <MapSelectorDialog
+                      lat={data.lat}
+                      lng={data.lng}
+                      onSelect={(lat, lng) =>
+                        setData((prev) => ({ ...prev, lat, lng }))
+                      }
+                    />
+                    <div className="text-sm text-muted-foreground">
+                      {data.lat && data.lng
+                        ? `Selected: Lat ${data.lat}, Lng ${data.lng}`
+                        : "No location selected"}
+                    </div>
+                  </div>
+                  
+                  <div className='w-full flex justify-end'>
+                    <Button
+                      onClick={() => handleApplicationAction(application.id, "forinterview", data)}
+                    >
+                      Schedule
+                    </Button>
+                  </div>
+                </div>
               </Modal>
               <Button
                 variant="destructive"
@@ -216,11 +349,16 @@ const EmployerApplications = () => {
   return (
     <AdminPageMain title="Applications" description="Review and manage job applications">
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <Card><CardContent className="p-4 flex items-center gap-3">
           <Clock className="h-8 w-8 text-orange-500" />
           <div><p className="text-2xl font-bold">{pendingApplications.length}</p>
             <p className="text-sm text-muted-foreground">Pending Review</p></div>
+        </CardContent></Card>
+        <Card><CardContent className="p-4 flex items-center gap-3">
+          <CheckCircle className="h-8 w-8 text-blue-500" />
+          <div><p className="text-2xl font-bold">{forInterviewApplications.length}</p>
+            <p className="text-sm text-muted-foreground">For Interview</p></div>
         </CardContent></Card>
         <Card><CardContent className="p-4 flex items-center gap-3">
           <CheckCircle className="h-8 w-8 text-green-500" />
@@ -229,7 +367,7 @@ const EmployerApplications = () => {
         </CardContent></Card>
         <Card><CardContent className="p-4 flex items-center gap-3">
           <CheckCircle className="h-8 w-8 text-green-500" />
-          <div><p className="text-2xl font-bold">{acceptedApplications.length}</p>
+          <div><p className="text-2xl font-bold">{activeApplications.length}</p>
             <p className="text-sm text-muted-foreground">Active</p></div>
         </CardContent></Card>
         <Card><CardContent className="p-4 flex items-center gap-3">
@@ -269,6 +407,7 @@ const EmployerApplications = () => {
       <Tabs defaultValue="pending" className="space-y-4">
         <TabsList>
           <TabsTrigger value="pending">Pending ({pendingApplications.length})</TabsTrigger>
+          <TabsTrigger value="forinterview">For Interview ({forInterviewApplications.length})</TabsTrigger>
           <TabsTrigger value="accepted">Accepted ({acceptedApplications.length})</TabsTrigger>
           <TabsTrigger value="active">Active ({activeApplications.length})</TabsTrigger>
           <TabsTrigger value="rejected">Rejected ({rejectedApplications.length})</TabsTrigger>
@@ -277,7 +416,7 @@ const EmployerApplications = () => {
           <TabsTrigger value="all">All ({jobFilteredApplications.length})</TabsTrigger>
         </TabsList>
 
-        {["pending", "accepted", "active", "rejected", "withdrawn", "completed", "all"].map(tab => (
+        {["pending", "forinterview", "accepted", "active", "rejected", "withdrawn", "completed", "all"].map(tab => (
           <TabsContent key={tab} value={tab} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {(tab === "all" ? jobFilteredApplications : jobFilteredApplications.filter(a => a.status === tab)).map(app => (

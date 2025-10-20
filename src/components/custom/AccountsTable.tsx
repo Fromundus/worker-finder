@@ -296,13 +296,13 @@ export default function AccountsTable() {
                             onClick={() => navigate(`${u.id}`)}
                           >View</DropdownMenuItem>
 
-                          {(u.status === "pending" || u.status === "inactive") && <DropdownMenuItem onClick={() => updateStatus([u.id], "active")}>
+                          {/* {(u.status === "pending" || u.status === "inactive") && <DropdownMenuItem onClick={() => updateStatus([u.id], "active")}>
                             Verify/Activate
                           </DropdownMenuItem>}
 
                           {u.status === "active" && <DropdownMenuItem onClick={() => updateStatus([u.id], "inactive")}>
                             Deactivate
-                          </DropdownMenuItem>}
+                          </DropdownMenuItem>} */}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
