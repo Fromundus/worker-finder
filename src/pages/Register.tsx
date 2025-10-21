@@ -133,7 +133,12 @@ const Register = () => {
       ...prev,
       [name]: value,
     }));
-    setErrors(null);
+    setErrors((prev) => {
+      return {
+        ...prev,
+        [name]: ""
+      }
+    });
 
     if (name === 'password') {
       const error = validatePassword(value);
@@ -143,6 +148,8 @@ const Register = () => {
       }));
     }
   };
+
+  console.log(errors);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -1051,7 +1058,8 @@ const Register = () => {
               <ButtonWithLoading
                 type="submit"
                 disabled={
-                  loading 
+                  loading ||
+                  (errors?.passwordRegexError !== undefined)
                 }
                 className="w-full mt-4"
                 loading={loading}
