@@ -63,7 +63,7 @@ export default function AddProject({ setAddProjectModal }: { setAddProjectModal:
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4 max-h-[500px] overflow-y-auto px-2">
         <InputWithLabel
             name="title"
             label="Project Title"
