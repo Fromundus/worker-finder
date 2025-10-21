@@ -109,6 +109,7 @@ const ProfilePage = () => {
       setAverageRating(res.data.averageRating);
       setTotalJobPosts(res.data.totalJobPosts);
       setTotalBookings(res.data.totalBookings);
+      setLoading(false);
     } catch (err) {
       console.error(err);
       toast({
@@ -116,6 +117,7 @@ const ProfilePage = () => {
         description: "Failed to load profile data",
         variant: "destructive",
       });
+      setLoading(false);
     }
   };
 
@@ -627,15 +629,15 @@ const ProfilePage = () => {
         </DialogContent>
       </Dialog>
       {(user.role === "admin" && (profile.status === "pending" || profile.status === "inactive")) && <div className="flex justify-end gap-2">
-        <Button variant="destructive" onClick={() => updateStatus([profile.id], "rejected")}>
+        <Button variant="destructive" onClick={() => updateStatus([profile.id], "rejected")} disabled={loading}>
           Reject
         </Button>
-        <Button onClick={() => updateStatus([profile.id], "active")}>
+        <Button onClick={() => updateStatus([profile.id], "active")} disabled={loading}>
           Verify/Activate
         </Button>
       </div>}
       {(user.role === "admin" && (profile.status === "active")) && <div className="flex justify-end gap-2">
-        <Button variant="destructive" onClick={() => updateStatus([profile.id], "inactive")}>
+        <Button variant="destructive" onClick={() => updateStatus([profile.id], "inactive")} disabled={loading}>
           Deactivate
         </Button>
       </div>}
