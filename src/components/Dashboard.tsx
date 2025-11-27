@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -66,6 +66,27 @@ export default function Dashboard() {
       echo.leave(`users.${user.id}`);
     };
   }, [token]);
+
+  const [notifications, setNotifications] = useState<number>(0);
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const res = await api.get("/notifications-count");
+        // console.log(res);
+        setNotifications(res.data);
+      } catch (err) {
+        console.error(err);
+        toast({
+          title: "Error",
+          description: "Failed to load notifications.",
+          variant: "destructive",
+        });
+      }
+    };
+
+    fetchNotifications();
+  }, []);
   
   return (
     <SidebarProvider>
@@ -83,6 +104,10 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="flex items-center gap-4">
+                <Link to={'notifications'} className="border h-10 w-10 rounded flex items-center justify-center hover:bg-accent relative">
+                  <Bell className="size-5" />
+                  {notifications ? <div className="bg-destructive w-2.5 h-2.5 rounded-full absolute -top-1 -right-1"></div> : null}
+                </Link>
               <ThemeToggle />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

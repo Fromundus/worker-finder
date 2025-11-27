@@ -62,27 +62,6 @@ export function AppSidebar() {
     return acc;
   }, {} as Record<string, typeof menuItems>);
 
-  const [notifications, setNotifications] = useState<number>(0);
-
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      try {
-        const res = await api.get("/notifications-count");
-        // console.log(res);
-        setNotifications(res.data);
-      } catch (err) {
-        console.error(err);
-        toast({
-          title: "Error",
-          description: "Failed to load notifications.",
-          variant: "destructive",
-        });
-      }
-    };
-
-    fetchNotifications();
-  }, []);
-
   return (
     <Sidebar collapsible="icon" className="border-r transition-all duration-300">
       <SidebarHeader className="p-4 flex items-center gap-3">
@@ -127,9 +106,9 @@ export function AppSidebar() {
                             "
                           >
                             {item.title}
-                            {item.title === "Notifications" && notifications > 0 && (
+                            {/* {item.title === "Notifications" && notifications > 0 && (
                               <div className="bg-red-500 size-2 rounded-full inline-block ml-2"></div>
-                            )}
+                            )} */}
                           </span>
                         </NavLink>
                       </TooltipTrigger>

@@ -118,7 +118,7 @@ const Register = () => {
     business_permit_photo: null,
     bir_certificate_photo: null,
 
-    educations: [{ level: "", school_name: "", course: "", year_graduated: "" }],
+    educations: [{ level: "", school_name: "", course: "", year_graduated: null, }],
     certificates: [{ title: "", issuing_organization: "", date_issued: "", certificate_photo: null }],
   });
 

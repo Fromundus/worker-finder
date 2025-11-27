@@ -50,12 +50,12 @@ export const workerNavigations = [
     icon: MessageCircle,
     group: "Navigation"
   },
-  {
-    title: "Notifications",
-    url: "notifications",
-    icon: Bell,
-    group: "Navigation"
-  },
+  // {
+  //   title: "Notifications",
+  //   url: "notifications",
+  //   icon: Bell,
+  //   group: "Navigation"
+  // },
   // {
   //   title: "Profile",
   //   url: "profile",
@@ -101,12 +101,12 @@ export const employerNavigations = [
     icon: MessageCircle,
     group: "Navigation"
   },
-  {
-    title: "Notifications",
-    url: "notifications",
-    icon: Bell,
-    group: "Navigation"
-  },
+  // {
+  //   title: "Notifications",
+  //   url: "notifications",
+  //   icon: Bell,
+  //   group: "Navigation"
+  // },
   // {
   //   title: "Profile",
   //   url: "profile",

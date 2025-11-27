@@ -7,6 +7,7 @@ import { Bell, BellOff, MessageSquare, FileCheck, BookOpen, Star } from "lucide-
 import api from "@/api/axios";
 import { useAuth } from "@/store/auth";
 import { toast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 const Notifications = () => {
   const [notifications, setNotifications] = useState<any[]>([]);
@@ -67,6 +68,10 @@ const Notifications = () => {
     return "bg-muted text-muted-foreground";
   };
 
+  const navigate = useNavigate();
+
+  const { user } = useAuth();
+
   return (
     <AdminPageMain
       title="Notifications"
@@ -80,8 +85,23 @@ const Notifications = () => {
         <div className="space-y-3">
           {notifications.map((notification) => (
             <Card
+              onClick={() => {
+                markAsRead(notification.id);
+                
+                if(notification.table_id){
+                  if(notification.type === "application"){
+                    navigate(`/${user?.role}/jobs/${notification.table_id}`);
+                  }
+                } else {
+                  if(notification.type === "application"){
+                    navigate(`/${user?.role}/applications`);
+                  } else if(notification.type === "booking"){
+                    navigate(`/${user?.role}/bookings`);
+                  }
+                }
+              }}
               key={notification.id}
-              className={`shadow-soft hover:shadow-medium transition-smooth ${
+              className={`shadow-soft hover:shadow-medium cursor-pointer transition-smooth ${
                 !notification.is_read
                   ? "border-l-4 border-l-primary bg-primary/5"
                   : ""
@@ -129,7 +149,7 @@ const Notifications = () => {
                           </span>
                         </div>
                       </div>
-                      {!notification.is_read && (
+                      {/* {!notification.is_read && (
                         <Button
                           size="sm"
                           variant="ghost"
@@ -137,7 +157,7 @@ const Notifications = () => {
                         >
                           <BellOff className="h-4 w-4" />
                         </Button>
-                      )}
+                      )} */}
                     </div>
                   </div>
                 </div>
