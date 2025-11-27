@@ -190,7 +190,7 @@ const Register = () => {
       });
 
       toast({ title: "Registered Successfully" });
-      navigate("/login");
+      // navigate("/login");
     } catch (err: any) {
       console.error(err);
       setErrors(err.response?.data?.errors || {});

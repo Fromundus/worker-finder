@@ -37,6 +37,7 @@ import WorkerJobDetails from "./pages/Worker/WorkerJobDetails";
 import AdminProfilePage from "./pages/Admin/AdminProfilePage";
 import AdminProfileUpdatePage from "./pages/Admin/AdminProfileUpdatePage";
 import ConversationPage from "./pages/ConversationPage";
+import EmailVerification from "./components/custom/EmailVerification";
 
 const queryClient = new QueryClient();
 
@@ -114,6 +115,8 @@ const App = () => {
                 <Route path="profile/update" element={<AdminProfileUpdatePage />} />
               </Route>
             </Route>
+
+            <Route path="/verify" element={<EmailVerification /> } />
 
             <Route path="/test" element={<Test />} />
 
