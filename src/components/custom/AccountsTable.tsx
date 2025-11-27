@@ -163,8 +163,70 @@ export default function AccountsTable() {
     }
   };
 
-
   const navigate = useNavigate();
+
+  const handleDownloadAll = async () => {
+    try {
+      const response = await api.get("/generate/all", {
+        responseType: "blob",
+        headers: { Accept: "application/pdf" }
+      });
+
+      console.log(response);
+
+      const url = URL.createObjectURL(response.data);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "users_list.pdf";
+      a.click();
+      URL.revokeObjectURL(url);
+
+    } catch (error) {
+      console.log("PDF download error:", error);
+    }
+  };
+
+  const handleDownloadWorker = async () => {
+    try {
+      const response = await api.get("/generate/worker", {
+        responseType: "blob",
+        headers: { Accept: "application/pdf" }
+      });
+
+      console.log(response);
+
+      const url = URL.createObjectURL(response.data);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "workers_list.pdf";
+      a.click();
+      URL.revokeObjectURL(url);
+
+    } catch (error) {
+      console.log("PDF download error:", error);
+    }
+  };
+
+  const handleDownloadEmployer = async () => {
+    try {
+      const response = await api.get("/generate/employer", {
+        responseType: "blob",
+        headers: { Accept: "application/pdf" }
+      });
+
+      console.log(response);
+
+      const url = URL.createObjectURL(response.data);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "employers_list.pdf";
+      a.click();
+      URL.revokeObjectURL(url);
+
+    } catch (error) {
+      console.log("PDF download error:", error);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -174,6 +236,19 @@ export default function AccountsTable() {
           <h2 className="text-2xl font-bold">Account Management</h2>
           <p className="text-muted-foreground">Manage Account information and records.</p>
         </div>
+
+        <div className="flex items-start gap-2 flex-wrap">
+          <Button onClick={handleDownloadAll}>
+            Generate Accounts Report
+          </Button>
+          <Button onClick={handleDownloadWorker}>
+            Generate Worker Report
+          </Button>
+          <Button onClick={handleDownloadEmployer}>
+            Generate Employer Report
+          </Button>
+        </div>
+
       </div>
 
       <Card>

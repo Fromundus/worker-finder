@@ -104,10 +104,10 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="flex items-center gap-4">
-                <Link to={'notifications'} className="border h-10 w-10 rounded flex items-center justify-center hover:bg-accent relative">
+                {user?.role !== "admin" && <Link to={'notifications'} className="border h-10 w-10 rounded flex items-center justify-center hover:bg-accent relative">
                   <Bell className="size-5" />
                   {notifications ? <div className="bg-destructive w-2.5 h-2.5 rounded-full absolute -top-1 -right-1"></div> : null}
-                </Link>
+                </Link>}
               <ThemeToggle />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
