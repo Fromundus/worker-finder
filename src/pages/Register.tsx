@@ -383,7 +383,7 @@ const Register = () => {
                       id="birth_day"
                       name="birth_day"
                       type="date"
-                      label="Birth Day"
+                      label="Birthdate"
                       value={formData.birth_day || ""}
                       onChange={(e) => {
                         const birthDate = e.target.value;
@@ -431,7 +431,7 @@ const Register = () => {
                     disabled={loading}
                     error={errors?.religion}
                   />
-                  <InputWithLabel
+                  {/* <InputWithLabel
                     id="civil_status"
                     name="civil_status"
                     type="text"
@@ -441,7 +441,23 @@ const Register = () => {
                     onChange={handleChange}
                     disabled={loading}
                     error={errors?.civil_status}
-                  />
+                  /> */}
+                  <div className="flex flex-col gap-3">
+                    <Label htmlFor="role">Civil Status</Label>
+                    <Select value={formData.civil_status} onValueChange={(value) => setFormData((prev) => ({ ...prev, civil_status: value }))}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Single">Single</SelectItem>
+                        <SelectItem value="Married">Married</SelectItem>
+                        <SelectItem value="Widowed">Widowed</SelectItem>
+                        {/* <SelectItem value="Divorced">Divorced</SelectItem> */}
+                        {/* <SelectItem value="Separated">Separated</SelectItem> */}
+                      </SelectContent>
+                    </Select>
+                    {errors?.civil_status && <span className="text-destructive">{errors?.civil_status}</span>}
+                  </div>
                   <InputWithLabel
                     id="height"
                     name="height"
