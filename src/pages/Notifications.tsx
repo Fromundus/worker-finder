@@ -97,6 +97,8 @@ const Notifications = () => {
                     navigate(`/${user?.role}/applications`);
                   } else if(notification.type === "booking"){
                     navigate(`/${user?.role}/bookings`);
+                  } else if(notification.type === "feedback"){
+                    navigate(`/${user?.role}/feedbacks`);
                   }
                 }
               }}

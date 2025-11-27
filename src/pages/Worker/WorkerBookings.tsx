@@ -182,7 +182,7 @@ const WorkerBookings = () => {
               <p className="text-muted-foreground">Email</p>
               <p className="font-medium">{employer?.email || "N/A"}</p>
             </div>
-            <div>
+            {/* <div>
               <p className="text-muted-foreground">Rating</p>
               <div className="flex items-center gap-1">
                 <Star className="h-4 w-4 text-yellow-500" />
@@ -190,7 +190,7 @@ const WorkerBookings = () => {
                   {employer?.average_rating || 0}/5
                 </span>
               </div>
-            </div>
+            </div> */}
           </div>
 
           <div className="flex items-center justify-between text-xs text-muted-foreground">
@@ -225,7 +225,8 @@ const WorkerBookings = () => {
               size="sm"
               onClick={() => handleAddFeedback(booking)}
             >
-              <Star className="h-4 w-4" /> Rate Employer
+              {/* <Star className="h-4 w-4" /> Rate Employer */}
+              Give Feedback
             </Button>
           )}
 
@@ -331,18 +332,18 @@ const WorkerBookings = () => {
       <Dialog open={isFeedbackDialogOpen} onOpenChange={setIsFeedbackDialogOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Rate Employer</DialogTitle>
+            <DialogTitle>Give Feedback to Employer</DialogTitle>
             <DialogDescription>
-              Provide a rating and feedback for{" "}
+              {/* Provide a rating and feedback for{" "}
               <span className="font-medium">
                 {selectedBooking?.employer?.name}
-              </span>
+              </span> */}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
             {/* Rating Stars */}
-            <div className="flex gap-2 justify-center">
+            {/* <div className="flex gap-2 justify-center">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
                   key={star}
@@ -355,11 +356,11 @@ const WorkerBookings = () => {
                   <Star className="h-12 w-12 fill-current" />
                 </button>
               ))}
-            </div>
+            </div> */}
 
             {/* Comment */}
             <div>
-              <Label htmlFor="comment">Comment</Label>
+              <Label htmlFor="comment">Feedback</Label>
               <Textarea
                 id="comment"
                 value={comment}
@@ -377,7 +378,7 @@ const WorkerBookings = () => {
               >
                 Cancel
               </Button>
-              <Button disabled={rating === 0} onClick={handleSubmitFeedback}>
+              <Button disabled={!comment} onClick={handleSubmitFeedback}>
                 Submit
               </Button>
             </div>

@@ -207,7 +207,8 @@ const WorkerApplications = () => {
           </div>
 
           {(application.status === "completed" && !application.employerIsRated) && <Button className='bg-yellow-500 hover:bg-yellow-600 hover:text-white text-white' disabled={loading} size="sm" variant="outline" onClick={() => handleAddFeedback(application)}>
-            <Star className="h-4 w-4" /> Rate
+            {/* <Star className="h-4 w-4" /> Rate */}
+            Give Feedback
           </Button>}
         </CardContent>
       </Card>
@@ -339,16 +340,16 @@ const WorkerApplications = () => {
       <Dialog open={isFeedbackDialogOpen} onOpenChange={setIsFeedbackDialogOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Rate Worker</DialogTitle>
+            <DialogTitle>Give Feedback to Employer</DialogTitle>
             <DialogDescription>
-              Provide a rating and feedback for{" "}
-              <span className="font-medium">{selectedApplication?.user?.name}</span>
+              {/* Provide a feedback for{" "} */}
+              {/* <span className="font-medium">{selectedApplication?.user?.first_name}</span> */}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
             {/* Rating Stars */}
-            <div className="flex gap-2 justify-center">
+            {/* <div className="flex gap-2 justify-center">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
                   key={star}
@@ -361,11 +362,11 @@ const WorkerApplications = () => {
                   <Star className="h-12 w-12 fill-current" />
                 </button>
               ))}
-            </div>
+            </div> */}
 
             {/* Comment */}
             <div>
-              <Label htmlFor="comment">Comment</Label>
+              <Label htmlFor="comment">Feedback</Label>
               <Textarea
                 id="comment"
                 value={comment}
@@ -381,7 +382,7 @@ const WorkerApplications = () => {
                 Cancel
               </Button>
               <Button
-                disabled={rating === 0}
+                disabled={!comment}
                 onClick={handleSubmitFeedback}
               >
                 Submit

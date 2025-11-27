@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from '@/components/ui/button';
-import { Briefcase, Check, Clock, DollarSign, Pause, Play, Plus, Search, Users, X, MapPin, Star } from 'lucide-react';
+import { Briefcase, Check, Clock, DollarSign, Pause, Play, Plus, Search, Users, X, MapPin, Star, CheckCircle2 } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -61,6 +61,8 @@ const EmployerJobs = () => {
   const [selectedApplication, setSelectedApplication] = useState<any | null>(null);
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
+
+  const [workersModal, setWorkersModal] = useState(false);
 
   // fetch jobs
   useEffect(() => {
@@ -191,6 +193,10 @@ const EmployerJobs = () => {
         variant: "destructive",
       });
     }
+  };
+
+  const areAllWorkersRated = (applications: any[]) => {
+      return applications.every(app => app.workerIsRated);
   };
   
   return (
@@ -485,10 +491,18 @@ const EmployerJobs = () => {
                           <Play className="h-4 w-4" />
                         </Button>
                       ) : null}
-                      {((job.status === "open" && job.applications?.length === 0) || job.status === "filled") && (
+                      {((job.status === "open" && job.applications?.length === 0)) && (
                         <Button disabled={loading} size="sm" variant="ghost" onClick={() => handleStatusChange(job.id, "closed")}>
                           <X className="h-4 w-4" />
                         </Button>
+                      )}
+
+                      {job.status === "filled" && (
+                        <>
+                          <Button disabled={loading || !areAllWorkersRated(job.applications)} size="sm" className='bg-green-500 text-white hover:bg-green-700' onClick={() => handleStatusChange(job.id, "closed")}>
+                            <CheckCircle2 /> Complete
+                          </Button>
+                        </>
                       )}
                     </div>
                   </div>
@@ -534,12 +548,15 @@ const EmployerJobs = () => {
                               ${app.status === "active" && "bg-green-500 hover:bg-green-600 text-white"}  
                               ${app.status === "completed" && "bg-primary"}  
                             `}>{app.status}</Badge>
-                            {(app.status === "active" && job.status !== "closed") && <Button disabled={loading} size="sm" variant="destructive" onClick={() => handleApplicationAction(app.id, "withdrawn")}>
+                            {(app.status === "active" && !app.workerIsRated && job.status !== "closed") && <Button disabled={loading} size="sm" variant="destructive" onClick={() => handleApplicationAction(app.id, "withdrawn")}>
                               <X className="h-4 w-4" /> Withdraw
                             </Button>}
-                            {(app.status === "completed" && !app.workerIsRated && job.status === "closed") && <Button className='bg-yellow-500 hover:bg-yellow-600 hover:text-white text-white' disabled={loading} size="sm" variant="outline" onClick={() => handleAddFeedback(app)}>
+                            {(app.status === "active" && !app.workerIsRated && job.status !== "closed") && <Button className='bg-yellow-500 hover:bg-yellow-600 hover:text-white text-white' disabled={loading} size="sm" variant="outline" onClick={() => handleAddFeedback(app)}>
                               <Star className="h-4 w-4" /> Rate
                             </Button>}
+                            {/* {(app.status === "completed" && !app.workerIsRated && job.status === "closed") && <Button className='bg-yellow-500 hover:bg-yellow-600 hover:text-white text-white' disabled={loading} size="sm" variant="outline" onClick={() => handleAddFeedback(app)}>
+                              <Star className="h-4 w-4" /> Rate
+                            </Button>} */}
                           </div>
                         </li>
                       ))}

@@ -179,6 +179,7 @@ const EmployerBookings = () => {
                 size="sm"
                 className="bg-green-500 text-white"
                 onClick={() => handleUpdateStatus(booking.id, "completed")}
+                disabled={loading || !booking.workerIsRated}
               >
                 Mark Completed
               </Button>
@@ -192,7 +193,7 @@ const EmployerBookings = () => {
             </div>
           )}
 
-          {booking.status === "completed" && !booking.workerIsRated && (
+          {booking.status === "active" && !booking.workerIsRated && (
             <Button
               className="bg-yellow-500 hover:bg-yellow-600 text-white"
               size="sm"

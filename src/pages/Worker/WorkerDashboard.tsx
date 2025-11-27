@@ -201,7 +201,7 @@ const WorkerDashboard = () => {
                 <div key={app.id} className="border rounded-lg p-3">
                   <p className="font-medium">{app.job_post?.title}</p>
                   <p className="text-sm text-muted-foreground">
-                    {app.job_post?.user?.business_name || app.job_post?.user?.name}
+                    {app.job_post?.user?.business_name || app.job_post?.user?.first_name}
                   </p>
                   <p className="text-xs text-muted-foreground">
                     Applied on {new Date(app.created_at).toLocaleDateString()}
@@ -232,7 +232,7 @@ const WorkerDashboard = () => {
                 <div key={job.id} className="border rounded-lg p-3">
                   <p className="font-medium">{job.title}</p>
                   <p className="text-sm text-muted-foreground">
-                    {job.user?.business_name || job.user?.name}
+                    {job.user?.business_name || job.user?.first_name}
                   </p>
                   <div className="flex items-center gap-1 text-xs text-muted-foreground">
                     <MapPin className="h-3 w-3" />

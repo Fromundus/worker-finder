@@ -42,7 +42,7 @@ const EmployerDashboard = () => {
   return (
     <AdminPageMain title='Dashboard Overview' description='Manage your job posts and applications'>
       {/* Top Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <Card className="shadow-soft">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Active Job Posts</CardTitle>
@@ -76,7 +76,7 @@ const EmployerDashboard = () => {
           </CardContent>
         </Card>
 
-        <Card className="shadow-soft">
+        {/* <Card className="shadow-soft">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Rating</CardTitle>
             <Star className="h-4 w-4 text-muted-foreground" />
@@ -87,7 +87,7 @@ const EmployerDashboard = () => {
             </div>
             <p className="text-xs text-muted-foreground">From workers</p>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
 
       {/* Recent Applications & Active Jobs */}
@@ -103,7 +103,7 @@ const EmployerDashboard = () => {
                 {stats.recent_applications.map((app: any) => (
                   <li key={app.id} className="flex justify-between text-sm">
                     <span>
-                      <span className="font-medium">{app.user?.name}</span> applied
+                      <span className="font-medium">{app.user?.first_name} {app.user?.middle_name} {app.user?.last_name} {app.user?.suffix}</span> applied
                       <span className="italic">{app.job_post?.title}</span>
                     </span>
                     <span className="text-muted-foreground text-xs">

@@ -82,7 +82,7 @@ const Feedbacks = () => {
     >
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Overall Rating */}
-        <Card className="shadow-medium">
+        {user.role !== "employer" && <Card className="shadow-medium">
           <CardHeader>
             <CardTitle>Overall Rating</CardTitle>
             <CardDescription>
@@ -111,10 +111,10 @@ const Feedbacks = () => {
               </div>
             </div>
           </CardContent>
-        </Card>
+        </Card>}
 
         {/* Rating Distribution */}
-        <Card className="shadow-medium">
+        {user.role !== "employer" && <Card className="shadow-medium">
           <CardHeader>
             <CardTitle>Rating Distribution</CardTitle>
             <CardDescription>Breakdown of your ratings</CardDescription>
@@ -143,12 +143,12 @@ const Feedbacks = () => {
               </div>
             ))}
           </CardContent>
-        </Card>
+        </Card>}
       </div>
 
       {/* Feedback List */}
       <div className="space-y-4 mt-6">
-        <h2 className="text-xl font-semibold">All Feedback ({myFeedback.length})</h2>
+        <h2 className="text-xl font-semibold">All Feedbacks ({myFeedback.length})</h2>
 
         <div className="grid grid-cols-1 gap-4">
           {myFeedback.map((feedback) => {
@@ -185,7 +185,7 @@ const Feedbacks = () => {
                         </CardDescription>
                       )}
                     </div>
-                    <div className="flex items-center gap-1">
+                    {user.role !== "employer" && <div className="flex items-center gap-1">
                       <div className="flex">
                         {[1, 2, 3, 4, 5].map((i) => (
                           <Star
@@ -201,7 +201,7 @@ const Feedbacks = () => {
                       <span className="text-sm font-medium ml-1">
                         {feedback.rating}/5
                       </span>
-                    </div>
+                    </div>}
                   </div>
                 </CardHeader>
                 <CardContent>
