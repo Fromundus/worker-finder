@@ -104,7 +104,7 @@ const AdminDashboard = () => {
               <ul className="space-y-2">
                 {stats.recent_users.map((u: any) => (
                   <li key={u.id} className="flex justify-between text-sm">
-                    <span className="font-medium">{u.name}</span>
+                    <span className="font-medium">{u.first_name} {u.middle_name} {u.last_name} {u.suffix}</span>
                     <span className="text-muted-foreground text-xs">
                       {new Date(u.created_at).toLocaleDateString()}
                     </span>
@@ -151,7 +151,7 @@ const AdminDashboard = () => {
               {stats.recent_applications.map((app: any) => (
                 <li key={app.id} className="flex justify-between text-sm">
                   <span>
-                    <span className="font-medium">{app.user?.name}</span> applied for{" "}
+                    <span className="font-medium">{app.user?.first_name} {app.user?.middle_name} {app.user?.last_name} {app.user?.suffix}</span> applied for{" "}
                     <span className="italic">{app.job_post?.title}</span>
                   </span>
                   <span className="text-muted-foreground text-xs">

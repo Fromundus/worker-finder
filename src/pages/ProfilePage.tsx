@@ -50,6 +50,9 @@ const ProfilePage = () => {
 
   const [projectModal, setProjectModal] = useState(false);
 
+  const [rejectModal, setRejectModal] = useState(false);
+  const [rejectMessage, setRejectMessage] = useState("");
+
 
   const handleChangeBookingData = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -151,6 +154,7 @@ const ProfilePage = () => {
     const data = {
       ids: ids,
       status: status,
+      message: rejectMessage,
     }
 
     try {
@@ -629,9 +633,20 @@ const ProfilePage = () => {
         </DialogContent>
       </Dialog>
       {(user.role === "admin" && (profile.status === "pending" || profile.status === "inactive")) && <div className="flex justify-end gap-2">
-        <Button variant="destructive" onClick={() => updateStatus([profile.id], "rejected")} disabled={loading}>
-          Reject
-        </Button>
+        <Modal open={rejectModal} setOpen={setRejectModal} title={`Reject ${profile.first_name}`} buttonClassName="bg-destructive text-white hover:bg-red-800" buttonLabel={
+          <>
+            Reject
+          </>
+        }>
+          <Textarea
+            placeholder="Enter message."
+            onChange={(e) => setRejectMessage(e.target.value)}
+            value={rejectMessage}
+          />
+          <Button variant="destructive" onClick={() => updateStatus([profile.id], "rejected")} disabled={loading || !rejectMessage}>
+            Reject
+          </Button>
+        </Modal>
         <Button onClick={() => updateStatus([profile.id], "active")} disabled={loading}>
           Verify/Activate
         </Button>
