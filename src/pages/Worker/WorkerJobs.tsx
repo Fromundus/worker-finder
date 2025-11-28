@@ -169,9 +169,9 @@ const WorkerJobs = () => {
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             {/* Municipality Filter */}
-            <Select value={municipality} onValueChange={setMunicipality}>
+            {/* <Select value={municipality} onValueChange={setMunicipality}>
               <SelectTrigger>
                 <SelectValue placeholder="Filter by Municipality" />
               </SelectTrigger>
@@ -183,7 +183,7 @@ const WorkerJobs = () => {
                   </SelectItem>
                 ))}
               </SelectContent>
-            </Select>
+            </Select> */}
 
             {/* Job Type Filter */}
             <Select value={jobType} onValueChange={setJobType}>
@@ -266,7 +266,7 @@ const WorkerJobs = () => {
                     {job.location && (
                       <div className="flex items-center gap-1">
                         <MapPin className="h-4 w-4" />
-                        {job.location.barangay}, {job.location.municipality}
+                        {job.location}
                       </div>
                     )}
                     <div className="flex items-center gap-1">

@@ -34,6 +34,7 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import AdminPage from "@/components/custom/AdminPage";
 import ipconfig from "@/ipconfig";
+import MapModal from "@/components/custom/LocationPicker";
 
 type FormData = {
   first_name: string;
@@ -149,7 +150,7 @@ const ProfileUpdatePage = () => {
           employer_type: user.employer_type,
 
           business_name: user.business_name,
-          // location: user.location_id,
+          location: user.location,
           lat: user.lat,
           lng: user.lng,
 
@@ -440,84 +441,27 @@ const ProfileUpdatePage = () => {
                   placeholder="e.g., 165 cm"
                   value={formData.height}
                   onChange={handleChange}
-                  disabled={loading}
+                  disabled={loading || (!formData.lat && !formData.lng)}
                   error={errors?.height}
                 />
               </div>
 
-              {/* Location Selector */}
               <div className="grid md:grid-cols-2 gap-4">
-                <div className="flex flex-col gap-3">
-                  <Label htmlFor="location">Address (Barangay)</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <button
-                        type="button"
-                        className={cn(
-                          "w-full justify-between rounded-md border border-input bg-background px-3 py-2 text-sm",
-                          !formData.location && "text-muted-foreground"
-                        )}
-                      >
-                        {formData.location
-                          ? formData.location
-                          : "Select barangay"}
-                      </button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[300px] p-0">
-                      <Command>
-                        <CommandInput placeholder="Search barangay..." />
-                        <CommandList>
-                          <CommandEmpty>No results found.</CommandEmpty>
-                          <CommandGroup className="max-h-60 overflow-y-auto">
-                            {barangays.map((b) => {
-                              const value = `${b.name}, ${b.municipality}`;
-                              return (
-                                <CommandItem
-                                  key={value}
-                                  value={value}
-                                  onSelect={() => {
-                                    setFormData((prev) => ({
-                                      ...prev,
-                                      location: value,
-                                      // lat: b.lat.toString(),
-                                      // lng: b.lng.toString(),
-                                    }));
-                                  }}
-                                >
-                                  <Check
-                                    className={cn(
-                                      "mr-2 h-4 w-4",
-                                      formData.location === value
-                                        ? "opacity-100"
-                                        : "opacity-0"
-                                    )}
-                                  />
-                                  {b.name}, {b.municipality}
-                                </CommandItem>
-                              );
-                            })}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                    {errors?.location && <span className="text-destructive text-sm">{errors?.location}</span>}
-                  </Popover>
-                </div>
+                <InputWithLabel
+                  id="location"
+                  name="location"
+                  type="text"
+                  label="Address"
+                  placeholder="Enter Location"
+                  value={formData.location}
+                  onChange={handleChange}
+                  disabled={loading}
+                  error={errors?.location}
+                />
 
-                {/* Map Picker */}
                 <div className="flex flex-col gap-3">
                   <Label>Exact Location</Label>
-                  <MapSelectorDialog
-                    lat={formData.lat}
-                    lng={formData.lng}
-                    onSelect={(lat, lng) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        lat,
-                        lng,
-                      }))
-                    }
-                  />
+                  <MapModal data={formData} setData={setFormData} />
                   {errors?.lat && <span className="text-destructive text-sm">{errors?.lat}</span>}
                   {errors?.lng && <span className="text-destructive text-sm">{errors?.lng}</span>}
                 </div>

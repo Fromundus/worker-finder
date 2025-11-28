@@ -42,6 +42,7 @@ import barangays from "@/data/barangays.json";
 import { cn } from '@/lib/utils';
 import ButtonWithLoading from '@/components/custom/ButtonWithLoading';
 import InputWithLabel from '@/components/custom/InputWithLabel';
+import MapModal from '@/components/custom/LocationPicker';
 
 const EmployerApplications = () => {
   const [applications, setApplications] = useState<any[]>([]);
@@ -76,7 +77,6 @@ const EmployerApplications = () => {
 
   const handleApplicationAction = async (applicationId: number, action: "accepted" | "rejected" | "forinterview", data?: {
     date: string;
-    location_id: string;
     location: string;
     lat: string;
     lng: string;
@@ -126,7 +126,6 @@ const EmployerApplications = () => {
 
     const [data, setData] = useState({
       date: "",
-      location_id: "",
       location: "",
       lat: "",
       lng: "",
@@ -233,7 +232,7 @@ const EmployerApplications = () => {
                     })}
                   />
 
-                  <div className="flex flex-col gap-3">
+                  {/* <div className="flex flex-col gap-3">
                     <Label htmlFor="address">Address (Barangay)</Label>
                     <Popover>
                       <PopoverTrigger asChild>
@@ -283,10 +282,10 @@ const EmployerApplications = () => {
                         </Command>
                       </PopoverContent>
                     </Popover>
-                  </div>
+                  </div> */}
                   
                   {/* Map Selector */}
-                  <div className="flex flex-col gap-3">
+                  {/* <div className="flex flex-col gap-3">
                     <Label>Exact Location</Label>
                     <MapSelectorDialog
                       lat={data.lat}
@@ -299,6 +298,27 @@ const EmployerApplications = () => {
                       {data.lat && data.lng
                         ? `Selected: Lat ${data.lat}, Lng ${data.lng}`
                         : "No location selected"}
+                    </div>
+                  </div> */}
+
+                  <div className="grid md:grid-cols-1 gap-4">
+                    <InputWithLabel
+                      id="location"
+                      name="location"
+                      type="text"
+                      label="Address"
+                      placeholder="Enter Location"
+                      value={data.location}
+                      onChange={(e) => setData(prev => ({ ...prev, location: e.target.value }))}
+                      disabled={loading || (!data.lat && !data.lng)}
+                      // error={errors?.location}
+                    />
+
+                    <div className="flex flex-col gap-3">
+                      <Label>Exact Location</Label>
+                      <MapModal data={data} setData={setData} />
+                      {/* {errors?.lat && <span className="text-destructive text-sm">{errors?.lat}</span>}
+                      {errors?.lng && <span className="text-destructive text-sm">{errors?.lng}</span>} */}
                     </div>
                   </div>
                   

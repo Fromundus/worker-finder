@@ -99,7 +99,7 @@ import AdminPageMain from "@/components/custom/AdminPageMain";
 import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Bell, Briefcase, Clock, Star, MapPin } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import api from "@/api/axios";
 import { useAuth } from "@/store/auth";
@@ -135,6 +135,8 @@ const WorkerDashboard = () => {
 
     fetchDashboard();
   }, [token]);
+
+  const navigate = useNavigate();
 
   return (
     <AdminPageMain
@@ -229,14 +231,14 @@ const WorkerDashboard = () => {
           <CardContent className="space-y-4">
             {stats.nearbyJobs.length > 0 ? (
               stats.nearbyJobs.map((job: any) => (
-                <div key={job.id} className="border rounded-lg p-3">
+                <div key={job.id} className="border rounded-lg p-3 cursor-pointer" onClick={() => navigate(`jobs/${job.id}`)}>
                   <p className="font-medium">{job.title}</p>
                   <p className="text-sm text-muted-foreground">
                     {job.user?.business_name || job.user?.first_name}
                   </p>
                   <div className="flex items-center gap-1 text-xs text-muted-foreground">
                     <MapPin className="h-3 w-3" />
-                    {job.location?.barangay}, {job.location?.municipality}
+                    {job.location}
                   </div>
                 </div>
               ))

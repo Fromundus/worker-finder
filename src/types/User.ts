@@ -21,7 +21,7 @@ type User = {
   last_name: string;
   lat: string;
   lng: string;
-  location_id: number;
+  location: string;
   middle_name: string;
   religion: string;
   role: string;

@@ -38,6 +38,8 @@ import {
   TabsContent
 } from "@/components/ui/tabs";
 import { MapSelectorDialog } from '@/components/custom/MapSelectorDialog';
+import InputWithLabel from '@/components/custom/InputWithLabel';
+import MapModal from '@/components/custom/LocationPicker';
 
 const EmployerJobs = () => {
   const { user } = useAuth();
@@ -51,7 +53,7 @@ const EmployerJobs = () => {
     description: '',
     job_type: '',
     salary: '',
-    location_id: '',
+    location: '',
     lat: '',
     lng: '',
   });
@@ -98,7 +100,7 @@ const EmployerJobs = () => {
         description: "Job post created successfully.",
       });
       setIsCreateDialogOpen(false);
-      setNewJob({ title: '', description: '', job_type: '', salary: '', location_id: '', lat: '', lng: '' });
+      setNewJob({ title: '', description: '', job_type: '', salary: '', location: '', lat: '', lng: '' });
       fetchJobs();
     } catch (err: any) {
       console.error(err);
@@ -269,72 +271,24 @@ const EmployerJobs = () => {
                 </div>
               </div>
 
-              {/* Barangay selection */}
-              <div className="flex flex-col gap-3">
-                <Label htmlFor="address">Address (Barangay)</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <button
-                      type="button"
-                      className={cn(
-                        "w-full justify-between rounded-md border border-input bg-background px-3 py-2 text-sm",
-                        !newJob.location_id && "text-muted-foreground"
-                      )}
-                    >
-                      {newJob.location_id
-                        ? `${barangays.find(b => b.id === Number(newJob.location_id))?.name}, ${barangays.find(b => b.id === Number(newJob.location_id))?.municipality}`
-                        : "Select barangay"}
-                    </button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-[300px] p-0">
-                    <Command>
-                      <CommandInput placeholder="Search barangay..." />
-                      <CommandList>
-                        <CommandEmpty>No results found.</CommandEmpty>
-                        <CommandGroup className="max-h-60 overflow-y-auto">
-                          {barangays.map((b) => (
-                            <CommandItem
-                              key={b.id}
-                              value={`${b.name}, ${b.municipality}`}
-                              onSelect={() => {
-                                setNewJob((prev) => ({
-                                  ...prev,
-                                  location_id: b.id.toString(),
-                                  lat: b.lat.toString(),
-                                  lng: b.lng.toString(),
-                                }));
-                              }}
-                            >
-                              <Check
-                                className={cn(
-                                  "mr-2 h-4 w-4",
-                                  newJob.location_id === b.id.toString() ? "opacity-100" : "opacity-0"
-                                )}
-                              />
-                              {b.name}, {b.municipality}
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      </CommandList>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
-              </div>
-
-              {/* Map Selector */}
-              <div className="flex flex-col gap-3">
-                <Label>Exact Location</Label>
-                <MapSelectorDialog
-                  lat={newJob.lat}
-                  lng={newJob.lng}
-                  onSelect={(lat, lng) =>
-                    setNewJob((prev) => ({ ...prev, lat, lng }))
-                  }
+              <div className="grid md:grid-cols-1 gap-4">
+                <InputWithLabel
+                  id="location"
+                  name="location"
+                  type="text"
+                  label="Address"
+                  placeholder="Enter Location"
+                  value={newJob.location}
+                  onChange={(e) => setNewJob(prev => ({ ...prev, location: e.target.value }))}
+                  disabled={loading || (!newJob.lat && !newJob.lng)}
+                  // error={errors?.location}
                 />
-                <div className="text-sm text-muted-foreground">
-                  {newJob.lat && newJob.lng
-                    ? `Selected: Lat ${newJob.lat}, Lng ${newJob.lng}`
-                    : "No location selected"}
+
+                <div className="flex flex-col gap-3">
+                  <Label>Exact Location</Label>
+                  <MapModal data={newJob} setData={setNewJob} />
+                  {/* {errors?.lat && <span className="text-destructive text-sm">{errors?.lat}</span>}
+                  {errors?.lng && <span className="text-destructive text-sm">{errors?.lng}</span>} */}
                 </div>
               </div>
 
@@ -348,7 +302,7 @@ const EmployerJobs = () => {
                     !newJob.description ||
                     !newJob.job_type ||
                     !newJob.salary ||
-                    !newJob.location_id ||
+                    !newJob.location ||
                     !newJob.lat ||
                     !newJob.lng
                   }
@@ -397,68 +351,6 @@ const EmployerJobs = () => {
         <h2 className="text-xl font-semibold">Your Jobs ({filteredJobs.length})</h2>
         <div className="grid grid-cols-1 gap-4">
           {filteredJobs.map((job) => (
-            // <Card key={job.id} className="shadow-soft hover:shadow-medium transition-smooth">
-            //   <CardHeader>
-            //     <div className="flex items-start justify-between">
-            //       <div className="flex-1">
-            //         <CardTitle className="text-lg">{job.title}</CardTitle>
-            //         <CardDescription className="mt-1">
-            //           Posted {new Date(job.created_at).toLocaleDateString()}
-            //         </CardDescription>
-            //       </div>
-            //       <div className="flex items-center gap-2">
-            //         <Badge className={`text-white
-            //           ${job.status === "open" && "bg-green-500"}  
-            //           ${job.status === "paused" && "bg-orange-500"}  
-            //           ${job.status === "closed" && "bg-red-500"}  
-            //         `}>{job.status}</Badge>
-            //         <div className="flex gap-1">
-            //           {(job.status === "open" || job.status === "paused") && <Button disabled={loading} size="sm" variant="ghost" onClick={() => handleStatusChange(job.id, 'filled')}>
-            //             <Check className="h-4 w-4" />
-            //           </Button>}
-            //           {job.status === 'open' ? (
-            //             <Button disabled={loading} size="sm" variant="ghost" onClick={() => handleStatusChange(job.id, 'paused')}>
-            //               <Pause className="h-4 w-4" />
-            //             </Button>
-            //           ) : job.status === 'paused' ? (
-            //             <Button disabled={loading} size="sm" variant="ghost" onClick={() => handleStatusChange(job.id, 'open')}>
-            //               <Play className="h-4 w-4" />
-            //             </Button>
-            //           ) : null}
-            //           {job.status !== "closed" && (
-            //             <Button disabled={loading} size="sm" variant="ghost" onClick={() => handleStatusChange(job.id, 'closed')}>
-            //               <X className="h-4 w-4" />
-            //             </Button>
-            //           )}
-            //         </div>
-            //       </div>
-            //     </div>
-            //   </CardHeader>
-            //   <CardContent className="space-y-4">
-            //     <p className="text-sm text-muted-foreground">{job.description}</p>
-            //     <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-            //       {job.location && (
-            //         <div className="flex items-center gap-1">
-            //           <MapPin className="h-4 w-4" />
-            //           {job.location.barangay}, {job.location.municipality}
-            //         </div>
-            //       )}
-            //       <div className="flex items-center gap-1">
-            //         <Clock className="h-4 w-4" />
-            //         {job.job_type}
-            //       </div>
-            //       <div className="flex items-center gap-1">
-            //         <DollarSign className="h-4 w-4" />
-            //         ₱{job.salary}/day
-            //       </div>
-            //       {(job.status === "open" || job.status === "paused") && <div className="flex items-center gap-1">
-            //         <Users className="h-4 w-4" />
-            //         {job.applications_count || 0} applications
-            //       </div>}
-            //     </div>
-            //   </CardContent>
-            // </Card>
-
             <Card key={job.id} className="shadow-soft hover:shadow-medium transition-smooth">
               <CardHeader>
                 <div className="flex items-start justify-between">
@@ -516,7 +408,7 @@ const EmployerJobs = () => {
                   {job.location && (
                     <div className="flex items-center gap-1">
                       <MapPin className="h-4 w-4" />
-                      {job.location.barangay}, {job.location.municipality}
+                      {job.location}
                     </div>
                   )}
                   <div className="flex items-center gap-1">
