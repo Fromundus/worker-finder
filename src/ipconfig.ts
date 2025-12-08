@@ -1,4 +1,3 @@
-const ipconfig = 'http://localhost:8000';
-// const ipconfig = 'https://darkslateblue-ibex-440157.hostingersite.com/api';
+const ipconfig = 'https://ticket.ficelco.com/testwf';
 
 export default ipconfig
